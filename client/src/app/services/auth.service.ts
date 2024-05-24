@@ -7,10 +7,11 @@ import { Router } from '@angular/router';
 import jwt_decode from 'jwt-decode';
 import { DialogService } from './dialog-service.service';
 import { ViewState } from '../models/state/viewstate';
-import { SystemInfo } from '../models/systems';
 import { AuthenticationResponse } from '../models/web/responses';
 import { AuthenticationRequest, UpdateRequest } from '../models/web/requests';
-import { ExceptionResponse, PasswordResetRequest, UserResponse, UsersResponse } from '../models/web/userWeb';
+import { ExceptionResponse, PasswordResetRequest, SystemInfoResponse, 
+  UserResponse, UsersResponse } from '../models/web/userWeb';
+import { SystemInfo } from '../models/systems';
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +31,7 @@ export class AuthService extends CacheService {
   teamID: string = '';
   siteID: string = '';
   interval: any;
+  systemInfo?: SystemInfo = undefined;
 
   authStatus = new BehaviorSubject<IAuthStatus>( 
     this.getItem('authStatus') || defaultAuthStatus);
@@ -296,9 +298,9 @@ export class AuthService extends CacheService {
     return this.httpClient.post<UsersResponse>(url, user, {observe: 'response'});
   }
 
-  systemData(): Observable<SystemInfo> {
+  systemData(): Observable<SystemInfoResponse> {
     const url = '/api/v2/metrics/system';
-    return this.httpClient.get<SystemInfo>(url);
+    return this.httpClient.get<SystemInfoResponse>(url);
   }
 }
 

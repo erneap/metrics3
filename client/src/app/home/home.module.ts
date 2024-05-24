@@ -7,7 +7,6 @@ import { HeaderComponent } from './header/header.component';
 import { NavigationMenuComponent } from './navigation-menu/navigation-menu.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { PasswordExpireDialogComponent } from './password-expire-dialog/password-expire-dialog.component';
-import { PtoHolidayBelowDialogComponent } from './pto-holiday-below-dialog/pto-holiday-below-dialog.component';
 import { StatusbarComponent } from './statusbar/statusbar.component';
 import { WaitDialogComponent } from './wait-dialog/wait-dialog.component';
 import { MaterialModule } from '../material.module';
@@ -22,7 +21,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     NavigationMenuComponent,
     NotFoundComponent,
     PasswordExpireDialogComponent,
-    PtoHolidayBelowDialogComponent,
     StatusbarComponent,
     WaitDialogComponent
   ],

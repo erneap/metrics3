@@ -8,6 +8,9 @@ import { PasswordExpireDialogComponent } from './password-expire-dialog/password
 import { WaitDialogComponent } from './wait-dialog/wait-dialog.component';
 import { DialogService } from '../services/dialog-service.service';
 import { AppStateService } from '../services/app-state.service';
+import { AuthenticationResponse } from '../models/web/responses';
+import { SystemInfo } from '../models/systems';
+import { SystemInfoResponse } from '../models/web/userWeb';
 
 @Component({
   selector: 'app-home',
@@ -39,7 +42,7 @@ export class HomeComponent {
     const user = this.authService.getUser();
     if (user) {
       this.authService.isAuthenticated = true;
-      this.getInitialData(user.id)
+      this.getInitialData()
     }
   }
 
@@ -90,9 +93,8 @@ export class HomeComponent {
           this.authService.isAuthenticated = true;
           this.stateService.showMenu = this.stateService.isDesktop();
           this.authService.startTokenRenewal();
-          this.msgService.startAlerts();
           this.authService.statusMessage = "User Login Complete";
-          this.getInitialData(id);
+          this.getInitialData();
         } else {
           this.loginError = data.exception;
           this.authService.isAuthenticated = false;
@@ -108,109 +110,20 @@ export class HomeComponent {
     });
   }
 
-  getInitialData(id: string) {
+  getInitialData() {
     this.authService.statusMessage = "Pulling Initial Data";
     this.dialogService.showSpinner();
-    this.authService.initialData(id).subscribe({
-      next: (data: InitialResponse) => {
+    this.authService.systemData().subscribe({
+      next: (data: SystemInfoResponse) => {
         this.dialogService.closeSpinner();
-        let leaveBalance: number = 0;
-        let holidayBalance: number = 0;
-        let ptoHours: number = 0;
-        let holidayHours: number = 0;
-        const now = new Date();
-        let emp: Employee | undefined = undefined;
-        let site = "";
-        let team = "Scheduler";
-        if (data.employee) {
-          this.employeeService.setEmployee(data.employee)
-          emp = new Employee(data.employee);
-          emp.leaves.forEach(lv => {
-            if (lv.leavedate.getFullYear() === now.getFullYear()) {
-              switch (lv.code.toLowerCase()) {
-                case "v":
-                  ptoHours += lv.hours;
-                  break;
-                case "h":
-                  holidayHours += lv.hours;
-                  break;
-              }
-            }
-          });
-          emp.balance.forEach(bal => {
-            if (bal.year === now.getFullYear()) {
-              leaveBalance = bal.annual + bal.carryover;
-            }
-          });
+        this.authService.systemInfo = undefined;
+        if (data && data !== null && data.systemInfo) {
+          this.authService.systemInfo = data.systemInfo;
         }
-        if (data.site) {
-          const oSite = new Site(data.site);
-          this.siteService.setSite(oSite);
-          site = oSite.name;
-        }
-        if (data.team) {
-          const oTeam = new Team(data.team);
-          team = oTeam.name;
-          this.teamService.setTeam(oTeam);
-          if (emp) {
-            oTeam.companies.forEach(co => {
-              if (emp?.companyinfo.company === co.id) {
-                holidayBalance = 8.0 * co.holidays.length;
-              }
-            });
-          }
-        }
-        let holPct = 0.0;
-        if (holidayBalance > 0.0) {
-          holPct = (holidayHours / holidayBalance ) * 100.0;
-        }
-        let ptoPct = 0.0;
-        if (leaveBalance > 0.0) {
-          ptoPct = (ptoHours / leaveBalance ) * 100.0;
-        }
-        if ((holPct > 0.0 && holPct < 80.0) 
-          || (ptoPct > 0.0 && ptoPct < 80.0)) {
-            const dialogRef = this.dialog.open(PtoHolidayBelowDialogComponent, {
-              width: '400px',
-              data: { 
-                ptoHours: ptoHours,
-                holidayHours: holidayHours,
-                totalPTO: leaveBalance,
-                totalHoliday: holidayBalance,
-              },
-            });
-        }
-        this.authService.setWebLabel(team, site, this.stateService.viewState);
-        this.siteService.startAutoUpdates();
-        this.getInitialNotifications(id);
       },
-      error: (err: InitialResponse) => {
+      error: (err: SystemInfoResponse) => {
         this.dialogService.closeSpinner();
         this.authService.statusMessage = `Problem getting initial data: ${err.exception}`;
-      }
-    })
-  }
-
-  getInitialNotifications(id: string) {
-    this.authService.statusMessage = "Checking for notifications";
-    this.dialogService.showSpinner()
-    this.msgService.getEmployeeMessages(id).subscribe({
-      next: (data: NotificationResponse) => {
-        this.dialogService.closeSpinner();
-        this.authService.statusMessage = "Initial Notifications reviewed";
-        this.msgService.startAlerts();
-        if (data && data !== null) {
-          if (this.msgService.showAlerts) {
-            this.router.navigateByUrl('/notifications');
-          } else {
-            this.router.navigateByUrl('/employee/schedule');
-          }
-        }
-      },
-      error: (err: NotificationResponse) => {
-        this.dialogService.closeSpinner();
-        this.authService.statusMessage = `Problem getting notification data: `
-          + `${err.exception}`;
       }
     })
   }
