@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/erneap/metrics-api/middleware"
-	"github.com/erneap/metrics-api/models/interfaces"
-	"github.com/erneap/metrics-api/models/web"
-	"github.com/erneap/metrics-api/services"
+	"github.com/erneap/metrics3/metrics-api/middleware"
+	"github.com/erneap/metrics3/metrics-api/models/interfaces"
+	"github.com/erneap/metrics3/metrics-api/models/web"
+	"github.com/erneap/metrics3/metrics-api/services"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

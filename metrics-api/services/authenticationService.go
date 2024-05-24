@@ -4,8 +4,9 @@ import (
 	"context"
 	"log"
 
-	"github.com/erneap/metrics-api/models/config"
-	"github.com/erneap/metrics-api/models/interfaces"
+	"models/interfaces"
+
+	"github.com/erneap/go-models/config"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

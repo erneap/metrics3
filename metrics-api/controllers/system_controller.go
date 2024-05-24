@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	systemdata "github.com/erneap/metrics-api/models/systemData"
+	systemdata "github.com/erneap/metrics3/metrics-api/models/systemData"
 	"github.com/gin-gonic/gin"
 )
 

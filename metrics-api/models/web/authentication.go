@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/erneap/metrics-api/models/interfaces"
+	"github.com/erneap/metrics3/metrics-api/models/interfaces"
 )
 
 type AuthenticationRequest struct {

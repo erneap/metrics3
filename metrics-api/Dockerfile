@@ -44,6 +44,6 @@ COPY initial.json /data/initial/initial.json
 
 USER scheduler:scheduler
 
-EXPOSE 6002
+EXPOSE 7010
 
 ENTRYPOINT [ "/go/bin/metrics-api" ]

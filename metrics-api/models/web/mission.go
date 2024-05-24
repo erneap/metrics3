@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/erneap/metrics-api/models/interfaces"
+	"github.com/erneap/metrics3/metrics-api/models/interfaces"
 )
 
 type CreateMission struct {

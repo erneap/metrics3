@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/erneap/metrics-api/controllers"
-	"github.com/erneap/metrics-api/middleware"
-	"github.com/erneap/metrics-api/models/config"
+	"github.com/erneap/metrics3/metrics-api/controllers"
+	"github.com/erneap/metrics3/metrics-api/middleware"
+	"github.com/erneap/metrics3/metrics-api/models/config"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,7 +13,7 @@ func main() {
 
 	// add routes
 	router := gin.Default()
-	api := router.Group("/metrics/api/v1")
+	api := router.Group("/api/v2/metrics")
 	{
 		api.GET("/system", controllers.GetSystemInfo)
 		users := api.Group("/user")
@@ -74,5 +74,5 @@ func main() {
 	}
 
 	// listen on port 3000
-	router.Run(":3000")
+	router.Run(":7010")
 }

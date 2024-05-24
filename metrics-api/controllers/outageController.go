@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/erneap/metrics-api/models/config"
-	"github.com/erneap/metrics-api/models/interfaces"
-	"github.com/erneap/metrics-api/models/web"
+	"github.com/erneap/metrics3/metrics-api/models/config"
+	"github.com/erneap/metrics3/metrics-api/models/interfaces"
+	"github.com/erneap/metrics3/metrics-api/models/web"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
