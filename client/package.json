@@ -1,9 +1,9 @@
 {
-  "name": "metrics-client",
-  "version": "0.0.0",
+  "name": "client",
+  "version": "3.0.0a",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --port 7010 --proxy-config proxy.conf.json",
+    "start": "ng serve --port 8093 --proxy-config proxy.conf.json",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -15,6 +15,7 @@
     "@angular/compiler": "^17.0.0",
     "@angular/core": "^17.0.0",
     "@angular/forms": "^17.0.0",
+    "@angular/material": "^17.3.6",
     "@angular/platform-browser": "^17.0.0",
     "@angular/platform-browser-dynamic": "^17.0.0",
     "@angular/router": "^17.0.0",
