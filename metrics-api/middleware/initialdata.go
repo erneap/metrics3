@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 
@@ -23,7 +23,7 @@ func InitialData() systemdata.SystemInfo {
 	defer jsonFile.Close()
 
 	// read all the data of the jsonFile into a byteArray
-	byteArray, err := ioutil.ReadAll(jsonFile)
+	byteArray, err := io.ReadAll(jsonFile)
 	if err != nil {
 		log.Println(err)
 	}

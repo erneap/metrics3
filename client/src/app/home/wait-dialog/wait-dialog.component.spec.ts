@@ -8,10 +8,10 @@ describe('WaitDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ WaitDialogComponent ]
+      declarations: [WaitDialogComponent]
     })
     .compileComponents();
-
+    
     fixture = TestBed.createComponent(WaitDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

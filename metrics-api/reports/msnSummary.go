@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/erneap/go-models/config"
 	"github.com/erneap/metrics3/metrics-api/middleware"
-	"github.com/erneap/metrics3/metrics-api/models/config"
 	"github.com/erneap/metrics3/metrics-api/models/interfaces"
 	systemdata "github.com/erneap/metrics3/metrics-api/models/systemData"
 	"github.com/xuri/excelize/v2"

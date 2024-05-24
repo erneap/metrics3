@@ -76,3 +76,8 @@ type SystemInfo struct {
 	GroundSystems   []GroundSystem   `json:"groundSystems,omitempty"`
 	Platforms       []Platform       `json:"platforms,omitempty"`
 }
+
+type SystemInfoResponse struct {
+	SystemInfo SystemInfo `json:"systemInfo,omitempty"`
+	Exception  string     `json:"exception,omitempty"`
+}

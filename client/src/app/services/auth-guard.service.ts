@@ -11,6 +11,7 @@ import {  CanActivate,
 } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import { AppStateService } from './app-state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
 
   constructor(
     protected authService: AuthService,
+    protected stateService: AppStateService,
     protected router: Router,
   ) { }
 
@@ -50,7 +52,6 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
 
       if (roleMatch) {
         params = { redirectUrl: route.pathFromRoot.map( r => r.url.join('/')) }
-        console.log(params);
       }
     }
     if (!this.authService.isAuthenticated || !roleMatch) {

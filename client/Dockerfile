@@ -7,9 +7,8 @@ RUN npm run build
 
 ### Stage 2: Run ###
 FROM nginx:1.25.3-alpine3.18
-RUN mkdir -p /usr/share/nginx/html/metrics
+RUN mkdir -p /usr/share/nginx/html/metrics3
 ADD . /data/reports
-COPY --from=build /app/dist/client /usr/share/nginx/html/metrics/
-COPY --from=build /app/clientHelp /usr/share/nginx/html/metrics/clientHelp
+COPY --from=build /app/dist/metrics-client /usr/share/nginx/html/metrics3/
 COPY --from=build /app/metrics.conf /etc/nginx/conf.d/metrics.conf
-EXPOSE 8080
+EXPOSE 8087

@@ -7,3 +7,4 @@ server/.env
 .DS_Store
 client/angular.json
 *.xlsx
+node_modules
