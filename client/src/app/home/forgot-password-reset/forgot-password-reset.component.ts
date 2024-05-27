@@ -1,14 +1,18 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
-import { DialogService } from '../../services/dialog-service.service';
-import { AppStateService } from '../../services/app-state.service';
-import { PasswordStrengthValidator } from '../../models/validators/password-strength-validator.directive';
-import { MustMatchValidator } from '../../models/validators/must-match-validator.directive';
-import { AuthenticationResponse } from '../../models/web/responses';
-import { User } from '../../models/users/user';
-import { SystemInfoResponse } from '../../models/web/userWeb';
+import { SystemInfo } from 'src/app/models/metrics/systems';
+import { Site } from 'src/app/models/sites/site';
+import { Team } from 'src/app/models/teams/team';
+import { User } from 'src/app/models/users/user';
+import { MustMatchValidator } from 'src/app/models/validators/must-match-validator.directive';
+import { PasswordStrengthValidator } from 'src/app/models/validators/password-strength-validator.directive';
+import { AuthenticationResponse, InitialResponse } from 'src/app/models/web/employeeWeb';
+import { NotificationResponse } from 'src/app/models/web/internalWeb';
+import { SystemInfoResponse } from 'src/app/models/web/userWeb';
+import { AppStateService } from 'src/app/services/app-state.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { DialogService } from 'src/app/services/dialog-service.service';
 
 @Component({
   selector: 'app-forgot-password-reset',
@@ -79,11 +83,12 @@ export class ForgotPasswordResetComponent {
     this.authService.systemData().subscribe({
       next: (data: SystemInfoResponse) => {
         this.dialogService.closeSpinner();
+        this.authService.systemInfo = undefined;
         if (data && data !== null && data.systemInfo) {
-          this.authService.systemInfo = data.systemInfo;
+          this.authService.systemInfo = new SystemInfo(data.systemInfo);
         }
       },
-      error: (err: SystemInfoResponse) => {
+      error: (err: InitialResponse) => {
         this.dialogService.closeSpinner();
         this.authService.statusMessage = `Problem getting initial data: ${err.exception}`;
       }

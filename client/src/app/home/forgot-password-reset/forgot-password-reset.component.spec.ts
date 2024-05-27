@@ -8,10 +8,10 @@ describe('ForgotPasswordResetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ForgotPasswordResetComponent]
+      declarations: [ ForgotPasswordResetComponent ]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(ForgotPasswordResetComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

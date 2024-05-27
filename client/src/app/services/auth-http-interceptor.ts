@@ -4,9 +4,9 @@ import { Router } from "@angular/router";
 import { Observable, throwError as observableThrowError } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { AuthService } from "./auth.service";
-import { DialogService } from "./dialog-service.service";
-import { AuthenticationResponse } from "../models/web/responses";
+import { AuthenticationResponse } from "../models/web/employeeWeb";
 import { ExceptionResponse } from "../models/web/userWeb";
+import { DialogService } from "./dialog-service.service";
 
 @Injectable()
 export class AuthHttpInterceptor implements HttpInterceptor {

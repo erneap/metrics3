@@ -1,13 +1,13 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { User } from '../../models/users/user';
-import { AuthService } from '../../services/auth.service';
-import { AppStateService } from '../../services/app-state.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { AppStateService } from 'src/app/services/app-state.service';
+import { User } from 'src/app/models/users/user';
 
 @Component({
   selector: 'app-navigation-menu',
   templateUrl: './navigation-menu.component.html',
-  styleUrl: './navigation-menu.component.scss'
+  styleUrls: ['./navigation-menu.component.scss']
 })
 export class NavigationMenuComponent {
   @Input() user: User | undefined;
@@ -36,5 +36,10 @@ export class NavigationMenuComponent {
   toggle() {
     this.appState.showMenu = !this.appState.showMenu;
     this.sidenav.emit();
+  }
+
+  getOldReports() {
+    let url = '/metrics/reportlists';
+    window.open(url, "download");
   }
 }

@@ -8,10 +8,10 @@ describe('StatusbarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [StatusbarComponent]
+      declarations: [ StatusbarComponent ]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(StatusbarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

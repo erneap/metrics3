@@ -1,14 +1,14 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { AppStateService } from '../../services/app-state.service';
-import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { AppStateService } from 'src/app/services/app-state.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrl: './header.component.scss'
+  styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent {
   @Output() sidenav = new EventEmitter<any>();
@@ -30,7 +30,8 @@ export class HeaderComponent {
   }
 
   logout() {
-    this.authService.setWebLabel();
+    this.authService.setWebLabel('','');
+    this.authService.systemInfo = undefined;
     this.appState.showMenu = false;
     this.authService.logout();
   }

@@ -1,4 +1,4 @@
-import { SystemInfo } from "../systems";
+import { ISystemInfo } from "../metrics/systems";
 import { IUser } from "../users/user";
 
 export interface UsersResponse {
@@ -17,12 +17,7 @@ export interface PasswordResetRequest {
   application?: string;
 }
 
-export interface UserResponse {
-  user: IUser,
-  exception: string
-}
-
 export interface SystemInfoResponse {
-  systemInfo: SystemInfo,
+  systemInfo?: ISystemInfo,
   exception: string
 }

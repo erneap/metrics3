@@ -1,18 +1,25 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { AuthService } from './services/auth.service';
-import { AppStateService } from './services/app-state.service';
-import { DialogService } from './services/dialog-service.service';
 import { Router } from '@angular/router';
+import { AuthService } from './services/auth.service';
+import { DialogService } from './services/dialog-service.service';
+import { InitialResponse } from './models/web/employeeWeb';
+import { Site } from './models/sites/site';
+import { HttpResponse } from '@angular/common/http';
+import { NotificationResponse } from './models/web/internalWeb';
+import { Team } from './models/teams/team';
 import { Location } from '@angular/common';
+import { AppStateService } from './services/app-state.service';
+import { MatSidenav } from '@angular/material/sidenav';
 import { SystemInfoResponse } from './models/web/userWeb';
-import * as jsonData from '../../package.json';
+import { SystemInfo } from './models/metrics/systems';
+const { version: appVersion } = require('../../package.json');
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
   title = 'client';
@@ -30,7 +37,7 @@ export class AppComponent {
     private router: Router,
     private location: Location
   ) {
-    this.appVersion = jsonData.version;
+    this.appVersion = appVersion;
     if (this.location.path() && this.location.path() !== '') {
       this.initialUrl = this.location.path();
     } else {
@@ -43,7 +50,7 @@ export class AppComponent {
     if (this.authService.isTokenExpired() || !user) {
       this.router.navigate(['/home']);
     } else {
-      this.getInitialData();
+      this.getInitialData(user.id);
     }
     this.width = this.stateService.viewWidth;
     if (!this.authService.isAuthenticated) {
@@ -58,7 +65,7 @@ export class AppComponent {
   }
 
   logout() {
-    this.authService.setWebLabel(this.stateService.viewState);
+    this.authService.setWebLabel('','', this.stateService.viewState);
     this.stateService.showMenu = false;
     this.authService.logout();
   }
@@ -68,19 +75,19 @@ export class AppComponent {
     window.open(url, "help_win");
   }
 
-  getInitialData() {
+  getInitialData(id: string) {
     this.authService.statusMessage = "Pulling Initial Data";
     this.dialogService.showSpinner();
     this.authService.systemData().subscribe({
       next: (data: SystemInfoResponse) => {
         this.dialogService.closeSpinner();
         if (data && data !== null && data.systemInfo) {
-          this.authService.systemInfo = data.systemInfo;
+          this.authService.systemInfo = new SystemInfo(data.systemInfo);
         }
       },
       error: (err: SystemInfoResponse) => {
         this.dialogService.closeSpinner();
-        this.authService.statusMessage = err.exception;
+        this.authService.statusMessage = `Problem getting initial data: ${err.exception}`;
       }
     })
   }

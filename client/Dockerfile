@@ -7,8 +7,8 @@ RUN npm run build
 
 ### Stage 2: Run ###
 FROM nginx:1.25.3-alpine3.18
-RUN mkdir -p /usr/share/nginx/html/metrics3
+RUN mkdir -p /usr/share/nginx/html/scheduler3
 ADD . /data/reports
-COPY --from=build /app/dist/metrics-client /usr/share/nginx/html/metrics3/
-COPY --from=build /app/metrics.conf /etc/nginx/conf.d/metrics.conf
+COPY --from=build /app/dist/scheduler-client /usr/share/nginx/html/scheduler3/
+COPY --from=build /app/scheduler.conf /etc/nginx/conf.d/scheduler.conf
 EXPOSE 8087

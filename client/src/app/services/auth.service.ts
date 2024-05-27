@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import { CacheService } from './cache.service';
 import { IUser, User } from '../models/users/user';
+import { AuthenticationRequest, AuthenticationResponse, ChangePasswordRequest, 
+  EmployeeResponse, InitialResponse, UpdateRequest }
+  from '../models/web/employeeWeb';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import jwt_decode from 'jwt-decode';
+import { ExceptionResponse, PasswordResetRequest, SystemInfoResponse, UsersResponse } from '../models/web/userWeb';
 import { DialogService } from './dialog-service.service';
 import { ViewState } from '../models/state/viewstate';
-import { AuthenticationResponse } from '../models/web/responses';
-import { AuthenticationRequest, UpdateRequest } from '../models/web/requests';
-import { ExceptionResponse, PasswordResetRequest, SystemInfoResponse, 
-  UserResponse, UsersResponse } from '../models/web/userWeb';
-import { SystemInfo } from '../models/systems';
+import { SystemInfo } from '../models/metrics/systems';
 
 @Injectable({
   providedIn: 'root'
@@ -25,13 +25,13 @@ export class AuthService extends CacheService {
   isTeamLeader = false;
   isAdmin = false;
   isCompanyLead = false;
-  schedulerLabel = "Scheduler";
+  schedulerLabel = "Metrics";
   section: string = 'employee';
   statusMessage: string = '';
   teamID: string = '';
   siteID: string = '';
   interval: any;
-  systemInfo?: SystemInfo = undefined;
+  systemInfo?: SystemInfo = undefined
 
   authStatus = new BehaviorSubject<IAuthStatus>( 
     this.getItem('authStatus') || defaultAuthStatus);
@@ -60,7 +60,7 @@ export class AuthService extends CacheService {
   }
 
   processToken() {
-    const url = '/authentication/authenticate';
+    const url = '/api/v2/authentication/authenticate';
     const data: AuthenticationRequest = {
       emailAddress: '',
       password: '',
@@ -86,7 +86,7 @@ export class AuthService extends CacheService {
   private apiAuthProvider(email: string, password: string)
     : Observable<AuthenticationResponse> {
     return this.httpClient.post<AuthenticationResponse>(
-      '/api/v2/scheduler/user/logon', 
+      '/api/v2/authentication/authenticate', 
       { email: email, password: password });
   }
 
@@ -103,14 +103,14 @@ export class AuthService extends CacheService {
     const user = this.getUser()
     if (user) {
       this.dialogService.showSpinner();
-      const url = `/api/v2/authentication/authenticate/${user.id}/scheduler`;
+      const url = `/api/v2/authentication/authenticate/${user.id}/metrics`;
       this.httpClient.delete(url).subscribe({
         next: () => {
           this.dialogService.closeSpinner();
           this.clearToken();
           this.stopTokenInterval();
           this.isAuthenticated = false;
-          this.setWebLabel();
+          this.setWebLabel("", "");
           this.router.navigate(["/home"]);
         },
         error: (err: ExceptionResponse) => {
@@ -122,7 +122,7 @@ export class AuthService extends CacheService {
       this.clearToken();
       this.stopTokenInterval();
       this.isAuthenticated = false;
-      this.setWebLabel();
+      this.setWebLabel("", "");
       this.router.navigate(["/home"]);
     }
   }
@@ -130,7 +130,7 @@ export class AuthService extends CacheService {
   public hasRole(role: string): boolean {
     const user = this.getUser();
     if (user) {
-      return user.isInGroup("scheduler", role);
+      return user.isInGroup("metrics", role);
     } else {
       return false;
     }
@@ -141,7 +141,7 @@ export class AuthService extends CacheService {
     const user = this.getUser();
     if (user) {
       roles.forEach(role => {
-        if (user.isInGroup("scheduler", role)) {
+        if (user.isInGroup("metrics", role)) {
           answer = true;
         }
       });
@@ -172,11 +172,7 @@ export class AuthService extends CacheService {
       const iUser = this.getItem<IUser>('current-user');
       if (iUser) {
         const user = new User(iUser);
-        this.isScheduler = user.isInGroup("scheduler", "scheduler");
-        this.isSiteLeader = user.isInGroup("scheduler", "siteleader");
-        this.isTeamLeader = user.isInGroup("scheduler", "teamleader")
-        this.isAdmin = user.isInGroup("scheduler", "admin");
-        this.isCompanyLead = user.isInGroup("scheduler", "company");
+        this.isAdmin = user.isInGroup("metrics", "admin");
         this.isAuthenticated = true;
         return user;
       }
@@ -188,11 +184,7 @@ export class AuthService extends CacheService {
 
   setUser(iUser: IUser) {
     const user = new User(iUser);
-    this.isScheduler = user.isInGroup("scheduler", "scheduler");
-    this.isSiteLeader = user.isInGroup("scheduler", "sitelead");
-    this.isTeamLeader = user.isInGroup("scheduler", "teamlead")
-    this.isAdmin = user.isInGroup("scheduler", "admin");
-    this.isCompanyLead = user.isInGroup("scheduler", "companylead");
+    this.isAdmin = user.isInGroup("metrics", "admin");
     this.setItem('current-user', user);
   }
 
@@ -225,8 +217,8 @@ export class AuthService extends CacheService {
     this.siteID = '';
   }
 
-  setWebLabel(viewState?: ViewState) {
-    this.schedulerLabel = "Metrics";
+  setWebLabel(team: string, site: string, viewState?: ViewState) {
+    this.schedulerLabel = "Metrics"
   }
 
   changeUser(id: string, field: string, value: string): 
@@ -241,14 +233,14 @@ export class AuthService extends CacheService {
   }
 
   changePassword(id: string, passwd: string): 
-    Observable<UserResponse> {
+    Observable<EmployeeResponse> {
     const url = '/api/v2/authentication/user';
     const data: UpdateRequest = {
       id: id,
       field: "password",
       value: passwd,
     }
-    return this.httpClient.put<UserResponse>(url, data);
+    return this.httpClient.put<EmployeeResponse>(url, data);
   }
 
   startPasswordReset(email: string): Observable<HttpResponse<void>> {
@@ -267,7 +259,7 @@ export class AuthService extends CacheService {
       emailAddress: email,
       password: passwd,
       token: token,
-      application: 'scheduler',
+      application: 'metrics',
     }
     return this.httpClient.put<AuthenticationResponse>(url, data)
   }
@@ -280,6 +272,11 @@ export class AuthService extends CacheService {
   addUser(user: User): Observable<HttpResponse<UsersResponse>> {
     const url = '/api/v2/authentication/user/'
     return this.httpClient.post<UsersResponse>(url, user, {observe: 'response'});
+  }
+
+  initialData(id: string): Observable<InitialResponse> {
+    const url = `/api/v2/scheduler/${id}`;
+    return this.httpClient.get<InitialResponse>(url);
   }
 
   systemData(): Observable<SystemInfoResponse> {

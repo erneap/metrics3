@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
-import * as jsonData from '../../../../package.json';
+import { AuthService } from 'src/app/services/auth.service';
+const { version: appVersion } = require('../../../../package.json');
 
 @Component({
   selector: 'app-statusbar',
@@ -11,9 +11,9 @@ export class StatusbarComponent {
   appVersion: string = "";
 
   constructor(
-    protected authService: AuthService 
+    protected authService: AuthService
   ) {
-    this.appVersion = jsonData.version;
+    this.appVersion = appVersion;
   }
 
   goToMetrics() {
