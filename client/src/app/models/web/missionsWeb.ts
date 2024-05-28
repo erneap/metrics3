@@ -26,8 +26,13 @@ export interface UpdateMission {
 }
 
 export interface MissionResponse {
+    mission: Mission;
+    exception: string;
+}
+
+export interface MissionsResponse {
     missions: Mission[];
-    exceptions: string;
+    exception: string;
 }
 
 export interface ReportRequest {

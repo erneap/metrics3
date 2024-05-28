@@ -12,7 +12,6 @@ export class Communication implements ICommunication {
     public sortID: number;
 
     constructor(comm?: ICommunication) {
-        console.log(comm);
         this.id = (comm) ? comm.id : '';
         this.explanation = (comm) ? comm.explanation : '';
         this.exploitations = [];

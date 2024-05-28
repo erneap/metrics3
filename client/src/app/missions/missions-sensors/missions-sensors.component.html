@@ -1,1 +1,14 @@
-<p>missions-sensors works!</p>
+<mat-tab-group *ngIf="show()" backgroundColor="accent">
+  <mat-tab label="GEOINT" *ngIf="showTab('GEOINT')">
+    <app-missions-sensors-imint [mission]="mission" (changed)="onChange($event)">
+    </app-missions-sensors-imint>
+  </mat-tab>
+  <mat-tab label="XINT" *ngIf="showTab('XINT')">
+    <app-missions-sensors-xint [mission]="mission" (changed)="onChange($event)">
+    </app-missions-sensors-xint>
+  </mat-tab>
+  <mat-tab label="DDSA" *ngIf="showTab('MIST')">
+    <app-missions-sensors-comm [mission]="mission" (changed)="onChange($event)">
+    </app-missions-sensors-comm>
+  </mat-tab>
+</mat-tab-group>

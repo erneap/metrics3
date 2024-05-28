@@ -59,6 +59,11 @@ func (ur *UpdateMission) DateValue() time.Time {
 }
 
 type MissionResponse struct {
+	Mission   interfaces.Mission `json:"mission"`
+	Exception string             `json:"exception"`
+}
+
+type MissionsResponse struct {
 	Missions  []interfaces.Mission `json:"missions"`
 	Exception string               `json:"exception"`
 }

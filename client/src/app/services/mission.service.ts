@@ -4,7 +4,8 @@ import { Observable, of, tap } from 'rxjs';
 import { AuthService } from './auth.service';
 import { CacheService } from './cache.service';
 import { IMission } from '../models/metrics/mission';
-import { CreateMission, MissionResponse, UpdateMission } from '../models/web/missionsWeb';
+import { CreateMission, MissionResponse, MissionsResponse, UpdateMission } 
+  from '../models/web/missionsWeb';
 import { GeneralSensorType } from '../models/metrics/systems';
 
 @Injectable({
@@ -23,31 +24,32 @@ export class MissionService extends CacheService {
   }
 
   getMissionsByDates(startdate: Date, enddate:Date): 
-    Observable<HttpResponse<MissionResponse>> {
+    Observable<MissionsResponse> {
     const startDate = new Date(Date.UTC(startdate.getFullYear(), 
       startdate.getMonth(), startdate.getDate()));
     const endDate = new Date(Date.UTC(enddate.getFullYear(), 
       enddate.getMonth(), enddate.getDate()));
-    const url = `/metrics/api/v1/mission/dates/${this.dateString(startDate)}/`
+    const url = `/api/v2/metrics/mission/dates/${this.dateString(startDate)}/`
       + `${this.dateString(endDate)}`;
-    return this.httpClient.get<MissionResponse>(url, { observe: 'response'});
+    return this.httpClient.get<MissionsResponse>(url);
   }
 
-  getMissions(platform: string, msndate: Date): Observable<HttpResponse<MissionResponse>> {
-    const url = `/metrics/api/v1/missions/${this.dateString(msndate)}/${platform}`;
-    return this.httpClient.get<MissionResponse>(url, { observe: 'response'});
+  getMissions(platform: string, msndate: Date): Observable<MissionsResponse> {
+    const url = `/api/v2/metrics/missions/${this.dateString(msndate)}/${platform}`;
+    return this.httpClient.get<MissionsResponse>(url);
   }
 
-  getMission(platform: string, msndate: Date, sortie: number): Observable<HttpResponse<IMission>> {
-    const url = `/metrics/api/v1/missions/${this.dateString(msndate)}/${platform}/${sortie}`;
-    return this.httpClient.get<IMission>(url, {observe: 'response'});
+  getMission(platform: string, msndate: Date, sortie: number): 
+    Observable<MissionResponse> {
+    const url = `/api/v2/metrics/missions/${this.dateString(msndate)}/${platform}/${sortie}`;
+    return this.httpClient.get<MissionResponse>(url);
   }
 
   createMission(platform: string, msndate: Date, sortie: number): 
-    Observable<HttpResponse<IMission>> {
+    Observable<MissionResponse> {
     const msnDate = new Date(Date.UTC(msndate.getFullYear(), msndate.getMonth(), 
       msndate.getDate()));
-    const url = '/metrics/api/v1/mission/';
+    const url = '>/api/v2/metrics/mission/';
     const newMission: CreateMission = {
       missionDate: new Date(msnDate),
       platformID: platform,
@@ -84,22 +86,40 @@ export class MissionService extends CacheService {
         }
       });
     }
-    return this.httpClient.post<IMission>(url, newMission, {observe: 'response'});
+    return this.httpClient.post<MissionResponse>(url, newMission);
   }
 
-  updateMission(change: UpdateMission): Observable<HttpResponse<IMission>> {
-    const url = '/metrics/api/v1/mission/';
-    return this.httpClient.put<IMission>(url, change, { observe: 'response'});
+  updateMission(id: string, field: string, value: string): Observable<MissionResponse> {
+    const url = '/api/v2/metrics/mission/';
+    const data: UpdateMission = {
+      id: id,
+      field: field,
+      value: value
+    };
+    return this.httpClient.put<MissionResponse>(url, data);
   }
 
-  updateMissionSensor(change: UpdateMission): Observable<HttpResponse<IMission>> {
-    const url = '/metrics/api/v1/mission/sensor/';
-    return this.httpClient.put<IMission>(url, change, {observe: 'response'});
+  updateMissionSensor(id: string, sensor: string, field: string, value: string, 
+    imageType?: string, imageSubType?: string): Observable<MissionResponse> {
+    const url = '/api/v2/metrics/mission/sensor/';
+    const change: UpdateMission = {
+      id: id,
+      sensorID: sensor,
+      field: field,
+      value: value
+    };
+    if (imageType) {
+      change.imageTypeID = imageType;
+      if (imageSubType) {
+        change.imageSubTypeID = imageSubType;
+      }
+    }
+    return this.httpClient.put<MissionResponse>(url, change);
   }
 
-  deleteMission(): Observable<HttpResponse<Object>> {
-    const url = `/metrics/api/v1/mission/${this.selectedMission?.id}`;
-    return this.httpClient.delete(url, {observe: 'response'});
+  deleteMission(): Observable<MissionResponse> {
+    const url = `/api/v2/metrics/mission/${this.selectedMission?.id}`;
+    return this.httpClient.delete<MissionResponse>(url);
   }
 
   private dateString(msndate:Date): string {

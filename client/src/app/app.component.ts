@@ -49,9 +49,7 @@ export class AppComponent {
     const user = this.authService.getUser();
     if (this.authService.isTokenExpired() || !user) {
       this.router.navigate(['/home']);
-    } else {
-      this.getInitialData(user.id);
-    }
+    } 
     this.width = this.stateService.viewWidth;
     if (!this.authService.isAuthenticated) {
       this.stateService.showMenu = false;
@@ -87,7 +85,8 @@ export class AppComponent {
       },
       error: (err: SystemInfoResponse) => {
         this.dialogService.closeSpinner();
-        this.authService.statusMessage = `Problem getting initial data: ${err.exception}`;
+        this.authService.statusMessage 
+          = `Problem getting initial data: ${err.exception}`;
       }
     })
   }

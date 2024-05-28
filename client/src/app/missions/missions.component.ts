@@ -6,7 +6,12 @@ import { DialogService } from '../services/dialog-service.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ListItem } from '../generic/button-list/listitem';
-import { Communication, Dcgs } from '../models/metrics/systems';
+import { Communication, Dcgs, IExploitation, SystemInfo } from '../models/metrics/systems';
+import { MissionResponse, MissionsResponse } from '../models/web/missionsWeb';
+import { MissionNewDialogComponent } from './mission-new-dialog/mission-new-dialog.component';
+import { SystemInfoResponse } from '../models/web/userWeb';
+import { AppStateService } from '../services/app-state.service';
+import { MissionDeleteDialogComponent } from './mission-delete-dialog/mission-delete-dialog.component';
 
 @Component({
   selector: 'app-missions',
@@ -15,7 +20,8 @@ import { Communication, Dcgs } from '../models/metrics/systems';
 })
 export class MissionsComponent {
   mission?: Mission = undefined;
-  sorties: ListItem[] = [];
+  sorties: string[] = [];
+  platforms: string[] = [];
   communications: string[] = [];
   dcgsList: string[] = [];
   missionForm: FormGroup;
@@ -24,6 +30,7 @@ export class MissionsComponent {
     protected authService: AuthService,
     protected msnService: MissionService,
     protected dialogService: DialogService,
+    protected appState: AppStateService,
     private dialog: MatDialog,
     private fb: FormBuilder
   ) {
@@ -40,6 +47,32 @@ export class MissionsComponent {
       isExecuted: 'none',
       imintsensor: '',
     });
+    this.platforms = [];
+    if (!this.authService.systemInfo) {
+      this.dialogService.showSpinner();
+      this.authService.statusMessage = 'Getting Initial Information';
+      this.authService.systemData().subscribe({
+        next: (data: SystemInfoResponse) => {
+          this.dialogService.closeSpinner();
+          if (data && data !== null && data.systemInfo) {
+            this.authService.systemInfo = new SystemInfo(data.systemInfo);
+            this.authService.systemInfo.platforms.forEach(plat => {
+              this.platforms.push(plat.id);
+            });
+          }
+        },
+        error: (err: SystemInfoResponse) => {
+          this.dialogService.closeSpinner();
+          this.authService.statusMessage = err.exception;
+        }
+      })
+    }
+    if (this.authService.systemInfo && this.authService.systemInfo.platforms) {
+      this.authService.systemInfo.platforms.forEach(plat => {
+        console.log(plat.id);
+        this.platforms.push(plat.id);
+      });
+    }
   }
 
   setMission() {
@@ -161,6 +194,193 @@ export class MissionsComponent {
                 });
               }
             })
+          });
+        }
+      });
+    }
+    return answer;
+  }
+
+  onDelete() {
+    const dialogRef = this.dialog.open(MissionDeleteDialogComponent, {
+      width: '250px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.toLowerCase() === 'yes') {
+        this.dialogService.showSpinner();
+        this.msnService.deleteMission()
+          .subscribe({
+            next: (resp: MissionResponse) => {
+              this.dialogService.closeSpinner();
+              this.mission = undefined;
+              this.setMission();
+            },
+            error: (err: MissionResponse) => {
+              this.dialogService.closeSpinner();
+              this.authService.statusMessage = err.exception;
+            }
+          })
+      }
+    });
+  }
+
+  clearMission() {
+    this.mission = undefined;
+    this.setMission();
+  }
+
+  getSortie(field: string) {
+    const msnDate = new Date(this.missionForm.value.msndate);
+    const platform = this.missionForm.value.platform;
+    let sortieID = this.missionForm.value.sortie;
+    const reMsn = new RegExp('^[0-9]*$');
+    if (field.toLowerCase() === 'msndate' || field.toLowerCase() === 'platform') {
+      this.sorties = [];
+      this.sorties.push('new');
+
+      if (msnDate.getTime() > 0 && platform !== '') {
+        this.dialogService.showSpinner();
+        this.msnService.getMissions(platform, msnDate).subscribe({
+          next: (data: MissionsResponse) => {
+            this.dialogService.closeSpinner();
+            if (data && data !== null && data.missions) {
+              data.missions.forEach(msn => {
+                this.sorties.push(`${msn.sortieID}`);
+              });
+              if (data.missions.length > 0) {
+                this.mission = new Mission(data.missions[0]);
+                this.setMission()
+              } else if (data.missions.length <= 0) {
+                this.mission = undefined;
+                this.setMission();
+              } 
+            } else {
+              this.mission = undefined;
+              this.setMission();
+            }
+          },
+          error: (err: MissionResponse) => {
+            this.dialogService.closeSpinner();
+            this.authService.statusMessage = err.exception;
+          }
+        })
+      }
+    } else if (msnDate.getTime() !== 0 && platform !== '' && sortieID === 'new') {
+      const dialogRef = this.dialog.open(MissionNewDialogComponent, {
+        data: { sortieID: ''},
+      });
+      dialogRef.afterClosed().subscribe(result => {
+        sortieID = result;
+        if (sortieID && sortieID !== '' && reMsn.test(sortieID) 
+          && Number(sortieID) > 0) {
+          this.dialogService.showSpinner();
+          this.msnService.createMission(platform, msnDate, Number(sortieID))
+          .subscribe({
+            next: (data: MissionResponse) => {
+              this.dialogService.closeSpinner();
+              if (data && data !== null && data.mission) {
+                this.mission = new Mission(data.mission);
+                this.setMission();
+              } 
+            },
+            error: (err: MissionResponse) => {
+              this.dialogService.closeSpinner();
+              this.authService.statusMessage = err.exception
+            }
+          });
+        }
+      });
+    } else if (msnDate.getTime() !== 0 && platform !== '' 
+      && reMsn.test(sortieID) && Number(sortieID) > 0) {
+      this.dialogService.showSpinner();
+      this.msnService.getMission(platform, msnDate, Number(sortieID)).subscribe({
+        next: (data: MissionResponse) => {
+          this.dialogService.closeSpinner();
+          if (data && data !== null && data.mission) {
+            this.mission = new Mission(data.mission);
+            this.setMission();
+          } 
+        },
+        error: (err: MissionResponse) => {
+          this.dialogService.closeSpinner();
+          this.authService.statusMessage = err.exception
+        }
+      });
+    }
+  }
+
+  getExploitations(): IExploitation[] {
+    if (this.authService.systemInfo && this.authService.systemInfo.exploitations) {
+      return this.authService.systemInfo.exploitations;
+    }
+    return [];
+  }
+
+  updateMission(field: string) {
+    let value = this.missionForm.controls[field].value;
+    if (field.toLowerCase() === 'overlap') {
+      value = String(this.convertOverlapStringToMinutes(value));
+    }
+    if (this.mission && this.mission.id && value !== '') {
+      this.dialogService.showSpinner();
+      this.msnService.updateMission(this.mission.id, field, value).subscribe({
+        next: (data: MissionResponse) => {
+          this.dialogService.closeSpinner();
+          if (data && data !== null && data.mission) {
+            this.mission = new Mission(data.mission);
+            this.setMission();
+          }
+        },
+        error: (err: MissionResponse) => {
+          this.dialogService.closeSpinner();
+          this.authService.statusMessage = err.exception;
+        }
+      });
+    }
+  }
+
+  showTailNumber(): boolean {
+    let answer = false;
+    if (this.mission && this.authService.systemInfo 
+      && this.authService.systemInfo.platforms) {
+      this.authService.systemInfo.platforms.forEach(plat => {
+        if (plat.id === this.mission?.platformID) {
+          plat.sensors.forEach(sen => {
+            if (sen.showTailNumber) {
+              answer = true;
+            }
+          })
+        }
+      })
+    }
+    return answer
+  }
+
+  commentsStyle(): string {
+    let ratio = this.appState.viewWidth / 800;
+    if (ratio > 1.0) ratio = 1.0;
+    const width = Math.floor(800 * ratio);
+    return `width: ${width}px;font-size: ${ratio}rem !important;`;
+  }
+
+  showSensor(sensorID: string): boolean {
+    let answer = false;
+    const platform = this.missionForm.value.platform;
+    const exploit = this.missionForm.value.exploitation;
+
+    if (this.authService.systemInfo && this.authService.systemInfo.platforms) {
+      this.authService.systemInfo.platforms.forEach(plat => {
+        if (plat.id === platform) {
+          plat.sensors.forEach(sen => {
+            if (sen.id === sensorID) {
+              sen.exploitations.forEach(exp => {
+                if (exp.exploitation.toLowerCase().indexOf(
+                  exploit.toLowerCase()) >= 0) {
+                  answer = true;
+                }
+              })
+            }
           });
         }
       });

@@ -26,7 +26,7 @@ func GetMissionsByDate(c *gin.Context) {
 
 	startDate, err := time.ParseInLocation("2006-01-02", msnDate, time.UTC)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.MissionResponse{Missions: tmissions,
+		c.JSON(http.StatusBadRequest, web.MissionsResponse{Missions: tmissions,
 			Exception: err.Error()})
 		return
 	}
@@ -36,13 +36,13 @@ func GetMissionsByDate(c *gin.Context) {
 	cursor, err := config.GetCollection(config.DB, "metrics", "missions").Find(context.TODO(),
 		filter)
 	if err != nil {
-		c.JSON(http.StatusNotFound, web.MissionResponse{Missions: tmissions,
+		c.JSON(http.StatusNotFound, web.MissionsResponse{Missions: tmissions,
 			Exception: err.Error()})
 		return
 	}
 
 	if err = cursor.All(context.TODO(), &tmissions); err != nil {
-		c.JSON(http.StatusNotFound, web.MissionResponse{Missions: tmissions,
+		c.JSON(http.StatusNotFound, web.MissionsResponse{Missions: tmissions,
 			Exception: err.Error()})
 		return
 	}
@@ -53,7 +53,7 @@ func GetMissionsByDate(c *gin.Context) {
 		msn.Decrypt()
 		missions = append(missions, msn)
 	}
-	c.JSON(http.StatusOK, web.MissionResponse{Missions: missions, Exception: ""})
+	c.JSON(http.StatusOK, web.MissionsResponse{Missions: missions, Exception: ""})
 }
 
 func GetMissionsByDates(c *gin.Context) {
@@ -64,13 +64,13 @@ func GetMissionsByDates(c *gin.Context) {
 
 	startDate, err := time.ParseInLocation("2006-01-02", sDate, time.UTC)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.MissionResponse{Missions: tmissions,
+		c.JSON(http.StatusBadRequest, web.MissionsResponse{Missions: tmissions,
 			Exception: err.Error()})
 		return
 	}
 	endDate, err := time.ParseInLocation("2006-01-02", eDate, time.UTC)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.MissionResponse{Missions: tmissions,
+		c.JSON(http.StatusBadRequest, web.MissionsResponse{Missions: tmissions,
 			Exception: err.Error()})
 		return
 	}
@@ -80,13 +80,13 @@ func GetMissionsByDates(c *gin.Context) {
 	cursor, err := config.GetCollection(config.DB, "metrics", "missions").Find(context.TODO(),
 		filter)
 	if err != nil {
-		c.JSON(http.StatusNotFound, web.MissionResponse{Missions: tmissions,
+		c.JSON(http.StatusNotFound, web.MissionsResponse{Missions: tmissions,
 			Exception: err.Error()})
 		return
 	}
 
 	if err = cursor.All(context.TODO(), &tmissions); err != nil {
-		c.JSON(http.StatusNotFound, web.MissionResponse{Missions: tmissions,
+		c.JSON(http.StatusNotFound, web.MissionsResponse{Missions: tmissions,
 			Exception: err.Error()})
 		return
 	}
@@ -98,7 +98,7 @@ func GetMissionsByDates(c *gin.Context) {
 		missions = append(missions, msn)
 	}
 
-	c.JSON(http.StatusOK, web.MissionResponse{Missions: missions, Exception: ""})
+	c.JSON(http.StatusOK, web.MissionsResponse{Missions: missions, Exception: ""})
 }
 
 func GetMissionsByDateAndPlatform(c *gin.Context) {
@@ -109,7 +109,7 @@ func GetMissionsByDateAndPlatform(c *gin.Context) {
 
 	startDate, err := time.ParseInLocation("2006-01-02", msnDate, time.UTC)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.MissionResponse{Missions: tmissions,
+		c.JSON(http.StatusBadRequest, web.MissionsResponse{Missions: tmissions,
 			Exception: err.Error()})
 		return
 	}
@@ -120,13 +120,13 @@ func GetMissionsByDateAndPlatform(c *gin.Context) {
 	cursor, err := config.GetCollection(config.DB, "metrics", "missions").Find(context.TODO(),
 		filter)
 	if err != nil {
-		c.JSON(http.StatusNotFound, web.MissionResponse{Missions: tmissions,
+		c.JSON(http.StatusNotFound, web.MissionsResponse{Missions: tmissions,
 			Exception: err.Error()})
 		return
 	}
 
 	if err = cursor.All(context.TODO(), &tmissions); err != nil {
-		c.JSON(http.StatusNotFound, web.MissionResponse{Missions: tmissions,
+		c.JSON(http.StatusNotFound, web.MissionsResponse{Missions: tmissions,
 			Exception: err.Error()})
 		return
 	}
@@ -137,7 +137,7 @@ func GetMissionsByDateAndPlatform(c *gin.Context) {
 		msn.Decrypt()
 		missions = append(missions, msn)
 	}
-	c.JSON(http.StatusOK, web.MissionResponse{Missions: missions, Exception: ""})
+	c.JSON(http.StatusOK, web.MissionsResponse{Missions: missions, Exception: ""})
 }
 
 func GetMissionByDatePlatformAndSortie(c *gin.Context) {
@@ -150,7 +150,9 @@ func GetMissionByDatePlatformAndSortie(c *gin.Context) {
 
 	startDate, err := time.ParseInLocation("2006-01-02", msnDate, time.UTC)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, &web.MissionResponse{
+			Exception: err.Error(),
+		})
 		return
 	}
 	endDate := startDate.Add(24 * time.Hour)
@@ -163,18 +165,21 @@ func GetMissionByDatePlatformAndSortie(c *gin.Context) {
 	err = config.GetCollection(config.DB, "metrics", "missions").FindOne(context.TODO(),
 		filter).Decode(&mission)
 	if err != nil {
-		c.JSON(http.StatusNotFound, web.Message{Message: err.Error()})
+		c.JSON(http.StatusNotFound, &web.MissionResponse{
+			Exception: err.Error(),
+		})
 		return
 	}
 	mission.Decrypt()
-	c.JSON(http.StatusOK, mission)
+	c.JSON(http.StatusOK, web.MissionResponse{Mission: mission})
 }
 
 func GetMissionByID(c *gin.Context) {
 	id := c.Param("id")
 	oID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, &web.MissionResponse{
+			Exception: err.Error()})
 		return
 	}
 
@@ -184,11 +189,12 @@ func GetMissionByID(c *gin.Context) {
 	err = config.GetCollection(config.DB, "metrics", "missions").FindOne(context.TODO(),
 		filter).Decode(&mission)
 	if err != nil {
-		c.JSON(http.StatusNotFound, web.Message{Message: err.Error()})
+		c.JSON(http.StatusNotFound, &web.MissionResponse{
+			Exception: err.Error()})
 		return
 	}
 	mission.Decrypt()
-	c.JSON(http.StatusOK, mission)
+	c.JSON(http.StatusOK, web.MissionResponse{Mission: mission})
 }
 
 func CreateMission(c *gin.Context) {
@@ -197,8 +203,8 @@ func CreateMission(c *gin.Context) {
 	defer cancel()
 
 	if err := c.ShouldBindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest,
-			web.Message{Message: "Trouble with request"})
+		c.JSON(http.StatusBadRequest, &web.MissionResponse{
+			Exception: "Trouble with request"})
 		return
 	}
 
@@ -213,7 +219,7 @@ func CreateMission(c *gin.Context) {
 		filter).Decode(&msn)
 	if err == nil {
 		msn.Decrypt()
-		c.JSON(http.StatusOK, msn)
+		c.JSON(http.StatusOK, web.MissionResponse{Mission: msn})
 		return
 	}
 
@@ -282,10 +288,11 @@ func CreateMission(c *gin.Context) {
 	msn.Encrypt()
 	_, err = config.GetCollection(config.DB, "metrics", "missions").InsertOne(ctx, msn)
 	if err != nil {
-		c.JSON(http.StatusNotModified, web.Message{Message: err.Error()})
+		c.JSON(http.StatusNotModified, &web.MissionResponse{
+			Exception: err.Error(),
+		})
 	}
-
-	c.JSON(http.StatusCreated, msn)
+	c.JSON(http.StatusCreated, web.MissionResponse{Mission: msn})
 }
 
 func UpdateMission(c *gin.Context) {
@@ -295,13 +302,14 @@ func UpdateMission(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest,
-			web.Message{Message: "Trouble with request"})
+			web.MissionResponse{Exception: "Trouble with request"})
 		return
 	}
 
 	id, err := primitive.ObjectIDFromHex(data.ID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: "Trouble created object ID"})
+		c.JSON(http.StatusBadRequest, web.MissionResponse{
+			Exception: "Trouble created object ID"})
 		return
 	}
 
@@ -310,7 +318,8 @@ func UpdateMission(c *gin.Context) {
 	err = config.GetCollection(config.DB, "metrics", "missions").FindOne(ctx, filter).
 		Decode(&mission)
 	if err != nil {
-		c.JSON(http.StatusNotFound, web.Message{Message: err.Error()})
+		c.JSON(http.StatusNotFound, web.MissionResponse{
+			Exception: err.Error()})
 		return
 	}
 	mission.Decrypt()
@@ -434,17 +443,19 @@ func UpdateMission(c *gin.Context) {
 			}
 		}
 	default:
-		c.JSON(http.StatusBadRequest, web.Message{Message: "Unknown Field"})
+		c.JSON(http.StatusBadRequest, web.MissionResponse{
+			Exception: "Unknown Field"})
 		return
 	}
 	mission.Encrypt()
 	_, err = config.GetCollection(config.DB, "metrics", "missions").ReplaceOne(ctx,
 		filter, mission)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, web.MissionResponse{
+			Exception: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, mission)
+	c.JSON(http.StatusOK, web.MissionResponse{Mission: mission})
 }
 
 func resetSensorList(mission *interfaces.Mission) {
@@ -551,13 +562,14 @@ func UpdateMissionSensor(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest,
-			web.Message{Message: "Trouble with request"})
+			web.MissionResponse{Exception: "Trouble with request"})
 		return
 	}
 
 	id, err := primitive.ObjectIDFromHex(data.ID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: "Trouble created object ID"})
+		c.JSON(http.StatusBadRequest, web.MissionResponse{
+			Exception: "Trouble created object ID"})
 		return
 	}
 
@@ -566,7 +578,8 @@ func UpdateMissionSensor(c *gin.Context) {
 	err = config.GetCollection(config.DB, "metrics", "missions").FindOne(ctx, filter).
 		Decode(&mission)
 	if err != nil {
-		c.JSON(http.StatusNotFound, web.Message{Message: err.Error()})
+		c.JSON(http.StatusNotFound, web.MissionResponse{
+			Exception: err.Error()})
 		return
 	}
 	mission.Decrypt()
@@ -603,8 +616,23 @@ func UpdateMissionSensor(c *gin.Context) {
 				sen.Comments = data.StringValue()
 			case "hap", "hashap":
 				sen.HasHap = data.BooleanValue()
+			case "reset":
+				sen.PreflightMinutes = 0
+				sen.ScheduledMinutes = 0
+				sen.ExecutedMinutes = 0
+				sen.PostflightMinutes = 0
+				sen.AdditionalMinutes = 0
+				sen.KitNumber = ""
+				sen.SensorOutage = interfaces.MissionSensorOutage{
+					TotalOutageMinutes:     uint(0),
+					PartialLBOutageMinutes: uint(0),
+					PartialHBOutageMinutes: uint(0)}
+				sen.GroundOutage = 0
+				sen.TowerID = 0
+				sen.Comments = ""
+				sen.HasHap = false
 			default:
-				c.JSON(http.StatusBadRequest, web.Message{Message: "Unknown Field"})
+				c.JSON(http.StatusBadRequest, web.MissionResponse{Exception: "Unknown Field"})
 				return
 			}
 			mission.MissionData.Sensors[pos] = sen
@@ -614,10 +642,11 @@ func UpdateMissionSensor(c *gin.Context) {
 	_, err = config.GetCollection(config.DB, "metrics", "missions").ReplaceOne(ctx,
 		filter, mission)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, web.MissionResponse{
+			Exception: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, mission)
+	c.JSON(http.StatusOK, web.MissionResponse{Mission: mission})
 }
 
 func UpdateMissionSensorImages(c *gin.Context) {
@@ -627,13 +656,14 @@ func UpdateMissionSensorImages(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest,
-			web.Message{Message: "Trouble with request"})
+			web.MissionResponse{Exception: "Trouble with request"})
 		return
 	}
 
 	id, err := primitive.ObjectIDFromHex(data.ID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: "Trouble created object ID"})
+		c.JSON(http.StatusBadRequest, web.MissionResponse{
+			Exception: "Trouble created object ID"})
 		return
 	}
 
@@ -642,7 +672,8 @@ func UpdateMissionSensorImages(c *gin.Context) {
 	err = config.GetCollection(config.DB, "metrics", "missions").FindOne(ctx, filter).
 		Decode(&mission)
 	if err != nil {
-		c.JSON(http.StatusNotFound, web.Message{Message: err.Error()})
+		c.JSON(http.StatusNotFound, web.MissionResponse{
+			Exception: err.Error()})
 		return
 	}
 	mission.Decrypt()
@@ -660,7 +691,7 @@ func UpdateMissionSensorImages(c *gin.Context) {
 								case "notcollected":
 									stype.NotCollected = data.NumberValue()
 								default:
-									c.JSON(http.StatusBadRequest, web.Message{Message: "Unknown Field"})
+									c.JSON(http.StatusBadRequest, web.MissionResponse{Exception: "Unknown Field"})
 									return
 								}
 							}
@@ -672,7 +703,7 @@ func UpdateMissionSensorImages(c *gin.Context) {
 						case "notcollected":
 							img.NotCollected = data.NumberValue()
 						default:
-							c.JSON(http.StatusBadRequest, web.Message{Message: "Unknown Field"})
+							c.JSON(http.StatusBadRequest, web.MissionResponse{Exception: "Unknown Field"})
 							return
 						}
 					}
@@ -684,17 +715,19 @@ func UpdateMissionSensorImages(c *gin.Context) {
 	_, err = config.GetCollection(config.DB, "metrics", "missions").ReplaceOne(ctx,
 		filter, mission)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, web.MissionResponse{
+			Exception: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, mission)
+	c.JSON(http.StatusOK, web.MissionResponse{Mission: mission})
 }
 
 func DeleteMission(c *gin.Context) {
 	id := c.Param("id")
 	oId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: "Trouble created object ID"})
+		c.JSON(http.StatusBadRequest, web.MissionResponse{
+			Exception: "Trouble created object ID"})
 		return
 	}
 
@@ -703,12 +736,15 @@ func DeleteMission(c *gin.Context) {
 	result, err := config.GetCollection(config.DB, "metrics", "missions").DeleteOne(
 		context.TODO(), filter)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, web.MissionResponse{
+			Exception: err.Error()})
 		return
 	}
 	if result.DeletedCount <= 0 {
-		c.JSON(http.StatusNotFound, web.Message{Message: "Mission for ID not found"})
+		c.JSON(http.StatusNotFound, web.MissionResponse{
+			Exception: "Mission for ID not found"})
 		return
 	}
-	c.JSON(http.StatusOK, web.Message{Message: "Mission Deleted"})
+	c.JSON(http.StatusOK, web.MissionResponse{
+		Exception: "Mission Deleted"})
 }

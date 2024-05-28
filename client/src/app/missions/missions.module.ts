@@ -27,6 +27,9 @@ import { MissionNewDialogComponent } from './mission-new-dialog/mission-new-dial
     MaterialModule,
     FormsModule,
     ReactiveFormsModule
+  ],
+  exports: [
+    MissionsComponent
   ]
 })
 export class MissionsModule { }

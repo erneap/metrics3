@@ -1,1 +1,145 @@
-<p>missions works!</p>
+<div class="toplevel">
+  <div class="flexlayout row topleft" style="width: 100%;">
+    <h3>Mission Information</h3>
+    <div class="flex-spacer"></div>
+    <button mat-icon-button color="accent"
+        *ngIf="mission"
+        matTooltip="Delete Current Mission"
+        (click)="onDelete()">
+        <mat-icon>delete</mat-icon>
+    </button>
+    <button mat-icon-button
+        matTooltip="Clear mission display"
+        (click)="clearMission()">
+        <mat-icon>deselect</mat-icon>
+    </button>
+  </div>
+  <form [formGroup]="missionForm" class="flexlayout column center" 
+    style="width: 100%;">
+    <div class="flexlayout row center flexgap">
+      <mat-form-field appearance="fill">
+        <mat-label>Mission Date</mat-label>
+        <input matInput [matDatepicker]="datepicker"
+          formControlName="msndate" (dateChange)="getSortie('msndate')">
+        <mat-datepicker-toggle matIconSuffix [for]="datepicker">
+        </mat-datepicker-toggle>
+        <mat-datepicker #datepicker></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Platform</mat-label>
+        <mat-select formControlName="platform" 
+          (selectionChange)="getSortie('platform')">
+          <mat-option *ngFor="let platform of platforms" [value]="platform">
+            {{platform}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Sortie ID</mat-label>
+        <mat-select formControlName="sortie"
+          (selectionChange)="getSortie('sortie')">
+          <mat-option *ngFor="let s of sorties" [value]="s">
+            {{s.toUpperCase()}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-raised-button *ngIf="mission !== undefined" color="accent">
+        Change Sortie ID
+      </button>
+    </div>
+    <ng-container *ngIf="mission !== undefined">
+      <div class="flexlayout row center flexgap">
+        <mat-form-field appearance="fill">
+          <mat-label>Mission Exploitation</mat-label>
+          <mat-select formControlName="exploitation" 
+            (selectionChange)="updateMission('exploitation')">
+            <mat-option *ngFor="let exp of getExploitations()" [value]="exp.id">
+              {{exp.id.toUpperCase()}}
+            </mat-option>
+          </mat-select>
+          <mat-error color="error" 
+            *ngIf="missionForm.controls['exploitation'].hasError('required')">
+            Required
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field *ngIf="showTailNumber()" appearance="fill">
+          <mat-label>Tail Number</mat-label>
+          <mat-select formControlName="tailnumber"
+            (selectionChange)="updateMission('tailnumber')">
+            <mat-option value="A">A</mat-option>
+            <mat-option value="B">B</mat-option>
+            <mat-option value="C">C</mat-option>
+            <mat-option value="D">D</mat-option>
+            <mat-option value="E">E</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Communications Method</mat-label>
+          <mat-select formControlName="communications"
+            (selectionChange)="updateMission('communications')">
+            <mat-option *ngFor="let comm of communications" [value]="comm">
+              {{comm.toUpperCase()}}
+            </mat-option>
+          </mat-select>
+          <mat-error color="error" 
+            *ngIf="missionForm.controls['communications'].hasError('required')">
+            Required
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Primary DCGS</mat-label>
+          <mat-select formControlName="dcgs"
+            (selectionChange)="updateMission('dcgs')">
+            <mat-option *ngFor="let dgs of dcgsList" [value]="dgs">
+              {{dgs.toUpperCase()}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Mission Overlap (Time)</mat-label>
+          <input matInput formControlName="overlap" 
+            (blur)="updateMission('dcgs')">
+        </mat-form-field>
+      </div>
+      <div class="flexlayout row center">
+        <mat-form-field appearance="fill" [style]="commentsStyle()">
+          <mat-label>Overall Mission Comments</mat-label>
+          <textarea matInput formControlName="comments" 
+            [style]="commentsStyle()"
+            (blur)="updateMission('comments')"></textarea>
+        </mat-form-field>
+      </div>
+      <div class="flexlayout row center">
+        <div class="flexlayout row center" 
+          style="background-color: white;padding: 5px;">
+          <mat-radio-group formControlName="isExecuted"
+            (change)="updateMission('isExecuted')">
+            <mat-radio-button [value]="'executed'">Executed</mat-radio-button>
+            <mat-radio-button [value]="'cancelled'">Cancelled</mat-radio-button>
+            <mat-radio-button [value]="'aborted'">Aborted</mat-radio-button>
+            <mat-radio-button [value]="'indefdelay'">Indef Delay</mat-radio-button>
+          </mat-radio-group>
+        </div>
+      </div>
+      <div class="flexlayout row center">
+        <div class="flexlayout row center"
+          style="background-color: white;padding: 5px;">
+          <h5 style="color: black;">GEOINT Exploitation Sensor:</h5>
+          <mat-radio-group formControlName="imintsensor" 
+            (change)="updateMission('imintsensor')">
+            <mat-radio-button *ngIf="showSensor('PME3')" value="PME3">
+              PME3
+            </mat-radio-button>
+            <mat-radio-button *ngIf="showSensor('PME4')" value="PME4">
+              PME4
+            </mat-radio-button>
+            <mat-radio-button *ngIf="showSensor('IMINT')" value="IMINT">
+              IMINT
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
+      </div>
+      <app-missions-sensors [mission]="mission"></app-missions-sensors>
+    </ng-container>
+  </form>
+</div>

@@ -23,7 +23,7 @@ export class OutageService extends CacheService {
 
   public pullAllOutages() {
     this.allOutages = [];
-    const url = '/metrics/api/v1/outage/';
+    const url = '>/api/v2/metrics/outage/';
     this.httpClient.get<IGroundOutage[]>(url)
       .subscribe({
         next: data => {
@@ -35,14 +35,14 @@ export class OutageService extends CacheService {
       });
   }
 
-  public getOutagesForWeek(outdate: Date): Observable<HttpResponse<IGroundOutage[]>> {
-    const url = `/metrics/api/v1/outage/byweek/${this.getDateString(outdate)}`
+  public getOutagesForWeek(outdate: Date): Observable<IGroundOutage[]> {
+    const url = `/api/v2/metrics/outage/byweek/${this.getDateString(outdate)}`
     return this.httpClient.get<IGroundOutage[]>(url, { observe: 'response'})
   }
 
   public getOutagesForPeriod(sDate: Date, eDate: Date): 
-    Observable<HttpResponse<IGroundOutage[]>> {
-    const url = `/metrics/api/v1/outage/byperiod/`
+    Observable<IGroundOutage[]> {
+    const url = `/api/v2/metrics/outage/byperiod/`
       + `${this.getDateString(sDate)}/${this.getDateString(eDate)}`;
     return this.httpClient.get<IGroundOutage[]>(url, { observe: 'response'})
   }
@@ -61,7 +61,7 @@ export class OutageService extends CacheService {
   }
 
   public createOutage(system: string, enclave: string, outagedate: Date)
-    : Observable<HttpResponse<IGroundOutage>> {
+    : Observable<IGroundOutage> {
     const newOutage: IGroundOutage = {
       groundSystem: system,
       classification: enclave,
@@ -90,13 +90,13 @@ export class OutageService extends CacheService {
         }
     });
     newOutage.outageNumber = outNum + 1;
-    const url = '/metrics/api/v1/outage/';
+    const url = '>/api/v2/metrics/outage/';
     return this.httpClient.post<IGroundOutage>(url, newOutage, 
       {observe: 'response'});
   }
 
-  deleteOutage(): Observable<HttpResponse<Object>> {
-    const url = `/metrics/api/v1/outage/${this.selectedOutage?.id}`;
-    return this.httpClient.delete(url, {observe: 'response'});
+  deleteOutage(): Observable<Object> {
+    const url = `/api/v2/metrics/outage/${this.selectedOutage?.id}`;
+    return this.httpClient.delete(url);
   }
 }

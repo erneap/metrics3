@@ -1,5 +1,4 @@
-import { GeneralSensorType } from '../systems';
-import { ImageType } from '../systems/imageTypes';
+import { GeneralSensorType, ImageType } from "./systems";
 
 export interface IMissionSensorOutage {
     totalOutageMinutes: number;

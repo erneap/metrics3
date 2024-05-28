@@ -243,13 +243,13 @@ export class AuthService extends CacheService {
     return this.httpClient.put<EmployeeResponse>(url, data);
   }
 
-  startPasswordReset(email: string): Observable<HttpResponse<void>> {
+  startPasswordReset(email: string): Observable<void> {
     const url = '/api/v2/authentication/reset';
     const data: AuthenticationRequest = {
       emailAddress: email,
       password: '',
     }
-    return this.httpClient.post<HttpResponse<void>>(url, data)
+    return this.httpClient.post<void>(url, data)
   }
 
   sendPasswordReset(email: string, passwd: string, token: string)
@@ -269,9 +269,9 @@ export class AuthService extends CacheService {
     return this.httpClient.get<UsersResponse>(url);
   }
 
-  addUser(user: User): Observable<HttpResponse<UsersResponse>> {
+  addUser(user: User): Observable<UsersResponse> {
     const url = '/api/v2/authentication/user/'
-    return this.httpClient.post<UsersResponse>(url, user, {observe: 'response'});
+    return this.httpClient.post<UsersResponse>(url, user);
   }
 
   initialData(id: string): Observable<InitialResponse> {
