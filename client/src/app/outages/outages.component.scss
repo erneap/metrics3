@@ -1,0 +1,34 @@
+.toplevel {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  color: white;
+}
+
+.form {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  height: 69px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.review {
+  position: absolute;
+  top: 70px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border: solid 1px white;
+  overflow-y: auto;
+}

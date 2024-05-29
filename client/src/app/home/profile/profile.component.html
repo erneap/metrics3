@@ -1,0 +1,58 @@
+<div class="fxLayout flexlayout column center">
+  <h2>User's Profile</h2>
+  <form [formGroup]="profileForm" class="flexlayout column center">
+    <div class="flexlayout row center">
+      <mat-form-field>
+        <mat-label>E-mail Address</mat-label>
+        <input matInput formControlName="email"
+          (blur)="updateUserField('email')">
+        <mat-error class="error" *ngIf="profileForm.controls['email'].hasError('required')">
+          Required
+        </mat-error>
+        <mat-error class="error" *ngIf="profileForm.controls['email'].hasError('email')">
+          Must be Email Address
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="flexlayout row center flexgap">
+      <mat-form-field appearance="fill">
+        <mat-label>First Name</mat-label>
+        <input matInput formControlName="first" (blur)="updateUserField('first')">
+        <mat-error class="error" *ngIf="profileForm.controls['first'].hasError('required')">
+          Required
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Middle Name</mat-label>
+        <input matInput formControlName="middle" (blur)="updateUserField('middle')">
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Last Name</mat-label>
+        <input matInput formControlName="last" (blur)="updateUserField('last')">
+        <mat-error class="error" *ngIf="profileForm.controls['last'].hasError('required')">
+          Required
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="flexlayout row center flexgap">
+      <mat-form-field appearance="fill">
+        <mat-label>New Password</mat-label>
+        <input matInput type="password" formControlName="password">
+        <mat-error *ngIf="this.profileForm.controls['password']?.invalid"
+          class="error">
+          {{getPasswordError()}}
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Verify New Password</mat-label>
+        <input matInput type="password" formControlName="password2">
+        <mat-error *ngIf="this.profileForm.controls['password2']?.invalid"
+          class="error">
+          {{getVerifyError()}}
+        </mat-error>
+      </mat-form-field>
+      <button mat-raised-button color="accent" *ngIf="showChange()"
+        (click)="setPassword()">Change</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,32 @@
+<div class="flexlayout row center" *ngIf="sensor.sensorID !== ''">
+  <div class="sensor" [style]="sensorStyle()">
+    {{sensor.sensorID}}
+  </div>
+  <div class="sensor" [style]="sensorStyle()">
+    {{convertToHHMM(sensor.preflightMinutes)}}
+  </div>
+  <div class="sensor" [style]="sensorStyle()">
+    {{convertToHHMM(sensor.scheduledMinutes)}}
+  </div>
+  <div class="sensor" [style]="sensorStyle()">
+    {{convertToHHMM(sensor.executedMinutes)}}
+  </div>
+  <div class="sensor" [style]="sensorStyle()">
+    {{convertToHHMM(sensor.postflightMinutes)}}
+  </div>
+  <div class="sensor" [style]="sensorStyle()">
+    {{sensor.finalCode}}
+  </div>
+  <div class="sensor" [style]="sensorStyle()">
+    {{sensor.kitNumber}}
+  </div>
+</div> 
+<div class="flexlayout row center" *ngIf="sensor.sensorID === ''">
+  <div class="sensor" [style]="sensorStyle()"></div>
+  <div class="sensor" [style]="sensorStyle()"></div>
+  <div class="sensor" [style]="sensorStyle()"></div>
+  <div class="sensor" [style]="sensorStyle()"></div>
+  <div class="sensor" [style]="sensorStyle()"></div>
+  <div class="sensor" [style]="sensorStyle()"></div>
+  <div class="sensor" [style]="sensorStyle()"></div>
+</div> 

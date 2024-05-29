@@ -1,0 +1,46 @@
+<div class="toplevel">
+  <div class="form">
+    <div class="flexlayout row center" style="width: 100%;">
+      <h2>Ground Outage Information</h2>
+      <div class="flex-spacer"></div>
+      <button mat-icon-button matTooltip="Clear Outage" (click)="onClear()">
+        <mat-icon>deselect</mat-icon>
+      </button>
+  </div>
+  <form [formGroup]="outageForm" class="flexlayout column center">
+    <div class="flexlayout row center">
+      <mat-form-field appearance="fill">
+        <mat-label>Ground System</mat-label>
+        <mat-select formControlName="system" 
+          (selectionChange)="getSystemEnclaves()">
+          <mat-option *ngFor="let system of getSystem()" [value]="system.id">
+            {{system.id}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>System Enclave</mat-label>
+        <mat-select formControlName="enclave">
+          <mat-option *ngFor="let enc of getSystemEnclaves()" [value]="enc">
+            {{enc}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Outage Date</mat-label>
+        <input matInput [matDatepicker]="datepicker"
+            formControlName="outagedate">
+        <mat-datepicker-toggle matIconSuffix [for]="datepicker"></mat-datepicker-toggle>
+        <mat-datepicker #datepicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="flexlayout row center" 
+      *ngIf="outage.id && (outage.id === 'new' || outage.id === '')">
+      <button mat-raised-button color="accent" (click)="onAdd()">
+        Add
+      </button>
+    </div>
+    <ng-container *ngIf="outage.id && outage.id !== 'new' && outage.id !== ''">
+    </ng-container>
+  </form>
+</div>

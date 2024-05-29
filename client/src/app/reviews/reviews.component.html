@@ -1,0 +1,30 @@
+<div class="toplevel">
+  <div class="form">
+    <h2>Mission Reviewer</h2>
+    <div class="flex-spacer"></div>
+    <form [formGroup]="reviewForm" class="flexlayout row center flexgap">
+      <mat-form-field appearance="fill">
+        <mat-label>Review Start Date</mat-label>
+        <input matInput formControlName="start" [matDatepicker]="startpicker"
+          (dateChange)="setMissionDays('start')">
+        <mat-datepicker-toggle matIconSuffix [for]="startpicker">
+        </mat-datepicker-toggle>
+        <mat-datepicker #startpicker></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Review End Date</mat-label>
+        <input matInput formControlName="end" [matDatepicker]="endpicker"
+          (dateChange)="setMissionDays('end')">
+        <mat-datepicker-toggle matIconSuffix [for]="endpicker">
+        </mat-datepicker-toggle>
+        <mat-datepicker #endpicker></mat-datepicker>
+      </mat-form-field>
+    </form>
+  </div>
+  <div class="review">
+    <ng-container *ngIf="this.days.length > 0">
+      <app-reviews-day *ngFor="let day of days" [day]="day" [width]="width">
+      </app-reviews-day>
+    </ng-container>
+  </div>
+</div>

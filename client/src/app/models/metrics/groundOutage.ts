@@ -32,7 +32,7 @@ export class GroundOutage {
 
     constructor(outage?: IGroundOutage) {
         this.id = (outage && outage.id) 
-            ? outage.id : '';
+            ? outage.id : 'new';
         this.outageDate = (outage && outage.outageDate) 
             ? new Date(outage.outageDate) : new Date(0);
         this.groundSystem = (outage && outage.groundSystem) 
@@ -54,6 +54,17 @@ export class GroundOutage {
         this.fixAction = (outage && outage.fixAction) ? outage.fixAction : '';
         this.missionOutage = (outage && outage.missionOutage) 
             ? outage.missionOutage : false;
+    }
+
+    compareTo(other?: GroundOutage): number {
+        if (other) {
+            if (this.outageDate.getTime() === other.outageDate.getTime()) {
+                return (this.outageNumber > other.outageNumber) ? -1 : 1;
+            }
+            return (this.outageDate.getTime() > other.outageDate.getTime())
+                ? -1 : 1;
+        }
+        return -1;
     }
 }
 

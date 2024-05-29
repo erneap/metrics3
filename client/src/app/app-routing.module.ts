@@ -5,11 +5,15 @@ import { NotFoundComponent } from './home/not-found/not-found.component';
 import { ForgotPasswordComponent } from './home/forgot-password/forgot-password.component';
 import { ForgotPasswordResetComponent } from './home/forgot-password-reset/forgot-password-reset.component';
 import { MissionsComponent } from './missions/missions.component';
+import { ReviewsComponent } from './reviews/reviews.component';
+import { ProfileComponent } from './home/profile/profile.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
+  { path: 'profile', component: ProfileComponent },
   { path: 'missions', component: MissionsComponent },
+  { path: 'review', component: ReviewsComponent },
   { path: 'reset/start', component: ForgotPasswordComponent },
   { path: 'reset/finish', component: ForgotPasswordResetComponent },
   { path: '**', component: NotFoundComponent}

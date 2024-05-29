@@ -2,7 +2,9 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';;
 import { CacheService } from './cache.service';
 import { Observable, Subject } from 'rxjs';
-import { IGroundOutage } from '../models/metrics/groundOutage';
+import { GroundOutage, IGroundOutage } from '../models/metrics/groundOutage';
+import { OutageResponse, OutagesResponse } from '../models/web/outageWeb';
+import { UpdateRequest } from '../models/web/employeeWeb';
 
 @Injectable({
   providedIn: 'root'
@@ -24,10 +26,15 @@ export class OutageService extends CacheService {
   public pullAllOutages() {
     this.allOutages = [];
     const url = '>/api/v2/metrics/outage/';
-    this.httpClient.get<IGroundOutage[]>(url)
+    this.httpClient.get<OutagesResponse>(url)
       .subscribe({
-        next: data => {
-        this.allOutages = data;
+        next: (data: OutagesResponse) => {
+          if (data && data !== null && data.outages) {
+            this.allOutages = [];
+            data.outages.forEach(out => {
+              this.allOutages.push(new GroundOutage(out));
+            })
+          }
         },
         error: err => {
           console.log(err)
@@ -35,16 +42,21 @@ export class OutageService extends CacheService {
       });
   }
 
-  public getOutagesForWeek(outdate: Date): Observable<IGroundOutage[]> {
+  public getOutage(id: string): Observable<OutageResponse> {
+    const url = `/api/v2/metrics/outage/${id}`;
+    return this.httpClient.get<OutageResponse>(url);
+  }
+
+  public getOutagesForWeek(outdate: Date): Observable<OutagesResponse> {
     const url = `/api/v2/metrics/outage/byweek/${this.getDateString(outdate)}`
-    return this.httpClient.get<IGroundOutage[]>(url, { observe: 'response'})
+    return this.httpClient.get<OutagesResponse>(url)
   }
 
   public getOutagesForPeriod(sDate: Date, eDate: Date): 
-    Observable<IGroundOutage[]> {
+    Observable<OutagesResponse> {
     const url = `/api/v2/metrics/outage/byperiod/`
       + `${this.getDateString(sDate)}/${this.getDateString(eDate)}`;
-    return this.httpClient.get<IGroundOutage[]>(url, { observe: 'response'})
+    return this.httpClient.get<OutagesResponse>(url)
   }
 
   private getDateString(date: Date): string {
@@ -61,7 +73,7 @@ export class OutageService extends CacheService {
   }
 
   public createOutage(system: string, enclave: string, outagedate: Date)
-    : Observable<IGroundOutage> {
+    : Observable<OutageResponse> {
     const newOutage: IGroundOutage = {
       groundSystem: system,
       classification: enclave,
@@ -91,12 +103,21 @@ export class OutageService extends CacheService {
     });
     newOutage.outageNumber = outNum + 1;
     const url = '>/api/v2/metrics/outage/';
-    return this.httpClient.post<IGroundOutage>(url, newOutage, 
-      {observe: 'response'});
+    return this.httpClient.post<OutageResponse>(url, newOutage);
   }
 
-  deleteOutage(): Observable<Object> {
+  updateOutage(id: string, field: string, value: string): Observable<OutageResponse> {
+    const url = '/api/v2/metrics/outage';
+    const data: UpdateRequest = {
+      id: id,
+      field: field,
+      value: value
+    };
+    return this.httpClient.put<OutageResponse>(url, data);
+  }
+
+  deleteOutage(): Observable<OutageResponse> {
     const url = `/api/v2/metrics/outage/${this.selectedOutage?.id}`;
-    return this.httpClient.delete(url);
+    return this.httpClient.delete<OutageResponse>(url);
   }
 }

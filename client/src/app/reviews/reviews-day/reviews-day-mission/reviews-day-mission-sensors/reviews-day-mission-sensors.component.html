@@ -1,0 +1,13 @@
+<div class="flexlayout column center">
+  <div class="flexlayout row center">
+    <div class="sensor" [style]="sensorStyle()">SENSOR</div>
+    <div class="sensor" [style]="sensorStyle()">PREMISSION</div>
+    <div class="sensor" [style]="sensorStyle()">SCHEDULED</div>
+    <div class="sensor" [style]="sensorStyle()">EXECUTED</div>
+    <div class="sensor" [style]="sensorStyle()">POSTMISSION</div>
+    <div class="sensor" [style]="sensorStyle()">CODE</div>
+    <div class="sensor" [style]="sensorStyle()">KIT NUMBER</div>
+  </div>
+  <app-reviews-day-mission-sensor *ngFor="let sen of sensors" 
+    [sensor]="sen" [width]="width"></app-reviews-day-mission-sensor>
+</div>

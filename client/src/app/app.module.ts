@@ -24,6 +24,9 @@ import { HeaderComponent } from './home/header/header.component';
 import { StatusbarComponent } from './home/statusbar/statusbar.component';
 import { MissionsModule } from './missions/missions.module';
 import { MissionService } from './services/mission.service';
+import { ReviewsModule } from './reviews/reviews.module';
+import { ProfileComponent } from './home/profile/profile.component';
+import { OutagesModule } from './outages/outages.module';
 
 @NgModule({
   declarations: [
@@ -38,7 +41,8 @@ import { MissionService } from './services/mission.service';
     ForgotPasswordResetComponent,
     PtoHolidayBelowDialogComponent,
     HeaderComponent,
-    StatusbarComponent
+    StatusbarComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
@@ -49,7 +53,9 @@ import { MissionService } from './services/mission.service';
     FormsModule,
     ReactiveFormsModule,
     GenericModule,
-    MissionsModule
+    MissionsModule,
+    ReviewsModule,
+    OutagesModule
   ],
   exports: [
     DeletionConfirmationComponent

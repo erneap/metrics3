@@ -1,0 +1,26 @@
+<div class="flexlayout row center">
+  <div class="data pointer" [style]="getStyle('date')" (click)="onClick()">
+    {{getDate(this.outage.outageDate)}}
+  </div>
+  <div class="data pointer" [style]="getStyle('number')" (click)="onClick()">
+    {{this.outage.outageNumber}}
+  </div>
+  <div class="data pointer" [style]="getStyle('capability')" (click)="onClick()">
+    {{this.outage.capability}}
+  </div>
+  <div class="data pointer" [style]="getStyle('system')" (click)="onClick()">
+    {{this.outage.groundSystem}}
+  </div>
+  <div class="data pointer" [style]="getStyle('classification')" (click)="onClick()">
+    {{this.outage.classification}}
+  </div>
+  <div class="data pointer" [style]="getStyle('problem')" (click)="onClick()">
+    {{this.outage.problem}}
+  </div>
+  <div class="data" [style]="getStyle('delete')">
+    <button mat-icon-button color="warn" matTooltip="Delete this outage"
+      (click)="onDelete()">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,42 @@
+<div class="flexlayout column center">
+  <div class="flexlayout row center">
+    <div class="label" [style]="fieldStyle('label')">Platform</div>
+    <div class="label" [style]="fieldStyle('label')">Sortie</div>
+    <div class="label" [style]="fieldStyle('label')">Exploitation</div>
+    <div class="label" [style]="fieldStyle('label')">Article</div>
+    <div class="label" [style]="fieldStyle('label')">Comm</div>
+    <div class="label" [style]="fieldStyle('label')">Primary DGS</div>
+    <div class="label" [style]="fieldStyle('label')"></div>
+  </div>
+  <div class="flexlayout row center">
+    <div class="mission" [style]="fieldStyle('mission')">
+      {{mission.platformID}}
+    </div>
+    <div class="mission" [style]="fieldStyle('mission')">
+      {{mission.sortieID}}
+    </div>
+    <div class="mission" [style]="fieldStyle('mission')">
+      {{mission.missionData?.exploitation}}
+    </div>
+    <div class="mission" [style]="fieldStyle('mission')">
+      {{mission.missionData?.tailNumber}}
+    </div>
+    <div class="mission" [style]="fieldStyle('mission')">
+      {{mission.missionData?.communications}}
+    </div>
+    <div class="mission" [style]="fieldStyle('mission')">
+      {{mission.missionData?.primaryDCGS}}
+    </div>
+    <div class="mission" [style]="fieldStyle('mission')">
+    </div>
+  </div>
+  <app-reviews-day-mission-sensors [width]="width" [sensors]="sensors">
+  </app-reviews-day-mission-sensors>
+  <div class="flexlayout row center">
+    <div class="label" [style]="fieldStyle('label')">Comments</div>
+    <div class="comments" [style]="fieldStyle('comments')">
+      {{getComments()}}
+    </div>
+  </div>
+  <div class="empty" [style]="fieldStyle('empty')" *ngIf="more">&nbsp;</div>
+</div>

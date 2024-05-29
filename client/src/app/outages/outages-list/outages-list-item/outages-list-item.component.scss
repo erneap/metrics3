@@ -1,0 +1,15 @@
+.data {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  color: black;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.delete {
+  color: red;
+}

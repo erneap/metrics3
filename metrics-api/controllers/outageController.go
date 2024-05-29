@@ -21,12 +21,12 @@ func GetAllOutages(c *gin.Context) {
 	cursor, err := config.GetCollection(config.DB, "metrics", "groundoutages").Find(context.TODO(),
 		bson.M{})
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, web.OutagesResponse{Exception: err.Error()})
 		return
 	}
 
 	if err = cursor.All(context.TODO(), &toutages); err != nil {
-		c.JSON(http.StatusNotFound, web.Message{Message: err.Error()})
+		c.JSON(http.StatusNotFound, web.OutagesResponse{Exception: err.Error()})
 		return
 	}
 
@@ -36,7 +36,7 @@ func GetAllOutages(c *gin.Context) {
 		outages = append(outages, outage)
 	}
 
-	c.JSON(http.StatusOK, outages)
+	c.JSON(http.StatusOK, web.OutagesResponse{Outages: outages})
 }
 
 func GetAllOutagesByDate(c *gin.Context) {
@@ -44,7 +44,7 @@ func GetAllOutagesByDate(c *gin.Context) {
 
 	startDate, err := time.ParseInLocation("2006-01-02", outDate, time.UTC)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, web.OutagesResponse{Exception: err.Error()})
 		return
 	}
 	endDate := startDate.Add(24 * time.Hour)
@@ -55,12 +55,12 @@ func GetAllOutagesByDate(c *gin.Context) {
 	cursor, err := config.GetCollection(config.DB, "metrics", "groundoutages").Find(context.TODO(),
 		filter)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, web.OutagesResponse{Exception: err.Error()})
 		return
 	}
 
 	if err = cursor.All(context.TODO(), &tOutages); err != nil {
-		c.JSON(http.StatusNotFound, web.Message{Message: err.Error()})
+		c.JSON(http.StatusNotFound, web.OutagesResponse{Exception: err.Error()})
 		return
 	}
 
@@ -69,7 +69,7 @@ func GetAllOutagesByDate(c *gin.Context) {
 		outages = append(outages, outage)
 	}
 
-	c.JSON(http.StatusOK, outages)
+	c.JSON(http.StatusOK, web.OutagesResponse{Outages: outages})
 }
 
 func GetAllOutagesByWeek(c *gin.Context) {
@@ -77,7 +77,7 @@ func GetAllOutagesByWeek(c *gin.Context) {
 
 	startDate, err := time.ParseInLocation("2006-01-02", sDate, time.UTC)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, web.OutagesResponse{Exception: err.Error()})
 		return
 	}
 	endDate := startDate.AddDate(0, 0, 7)
@@ -88,12 +88,12 @@ func GetAllOutagesByWeek(c *gin.Context) {
 	cursor, err := config.GetCollection(config.DB, "metrics", "groundoutages").Find(context.TODO(),
 		filter)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, web.OutagesResponse{Exception: err.Error()})
 		return
 	}
 
 	if err = cursor.All(context.TODO(), &tOutages); err != nil {
-		c.JSON(http.StatusNotFound, web.Message{Message: err.Error()})
+		c.JSON(http.StatusNotFound, web.OutagesResponse{Exception: err.Error()})
 		return
 	}
 
@@ -102,7 +102,7 @@ func GetAllOutagesByWeek(c *gin.Context) {
 		outages = append(outages, outage)
 	}
 
-	c.JSON(http.StatusOK, outages)
+	c.JSON(http.StatusOK, web.OutagesResponse{Outages: outages})
 }
 
 func GetAllOutagesByPeriod(c *gin.Context) {
@@ -111,12 +111,12 @@ func GetAllOutagesByPeriod(c *gin.Context) {
 
 	startDate, err := time.ParseInLocation("2006-01-02", sDate, time.UTC)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, web.OutagesResponse{Exception: err.Error()})
 		return
 	}
 	endDate, err := time.ParseInLocation("2006-01-02", eDate, time.UTC)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, web.OutagesResponse{Exception: err.Error()})
 		return
 	}
 
@@ -126,12 +126,12 @@ func GetAllOutagesByPeriod(c *gin.Context) {
 	cursor, err := config.GetCollection(config.DB, "metrics", "groundoutages").Find(context.TODO(),
 		filter)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, web.OutagesResponse{Exception: err.Error()})
 		return
 	}
 
 	if err = cursor.All(context.TODO(), &tOutages); err != nil {
-		c.JSON(http.StatusNotFound, web.Message{Message: err.Error()})
+		c.JSON(http.StatusNotFound, web.OutagesResponse{Exception: err.Error()})
 		return
 	}
 
@@ -142,7 +142,7 @@ func GetAllOutagesByPeriod(c *gin.Context) {
 
 	sort.Sort(interfaces.ByOutage(outages))
 
-	c.JSON(http.StatusOK, outages)
+	c.JSON(http.StatusOK, web.OutagesResponse{Outages: outages})
 }
 
 func GetAllOutagesBySystem(c *gin.Context) {
@@ -154,12 +154,12 @@ func GetAllOutagesBySystem(c *gin.Context) {
 	cursor, err := config.GetCollection(config.DB, "metrics", "groundoutages").Find(context.TODO(),
 		filter)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, web.OutagesResponse{Exception: err.Error()})
 		return
 	}
 
 	if err = cursor.All(context.TODO(), &tOutages); err != nil {
-		c.JSON(http.StatusNotFound, web.Message{Message: err.Error()})
+		c.JSON(http.StatusNotFound, web.OutagesResponse{Exception: err.Error()})
 		return
 	}
 
@@ -175,7 +175,7 @@ func GetOutage(c *gin.Context) {
 	id := c.Param("id")
 	oId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, web.OutageResponse{Exception: err.Error()})
 		return
 	}
 
@@ -185,12 +185,12 @@ func GetOutage(c *gin.Context) {
 	err = config.GetCollection(config.DB, "metrics", "groundoutages").FindOne(context.TODO(),
 		filter).Decode(&outage)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, web.OutageResponse{Exception: err.Error()})
 		return
 	}
 	outage.Decrypt()
 
-	c.JSON(http.StatusOK, outage)
+	c.JSON(http.StatusOK, web.OutageResponse{Outage: outage})
 }
 
 func CreateOutage(c *gin.Context) {
@@ -208,10 +208,10 @@ func CreateOutage(c *gin.Context) {
 
 	_, err := config.GetCollection(config.DB, "metrics", "groundoutages").InsertOne(ctx, data)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, web.OutageResponse{Exception: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, data)
+	c.JSON(http.StatusOK, web.OutageResponse{Outage: data})
 }
 
 func UpdateOutage(c *gin.Context) {
@@ -221,14 +221,14 @@ func UpdateOutage(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest,
-			web.Message{Message: "Trouble with request"})
+			web.OutageResponse{Exception: "Trouble with request"})
 		return
 	}
 
 	oId, err := primitive.ObjectIDFromHex(data.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest,
-			web.Message{Message: "Trouble with request: " + err.Error()})
+			web.OutageResponse{Exception: "Trouble with request: " + err.Error()})
 		return
 	}
 
@@ -238,7 +238,7 @@ func UpdateOutage(c *gin.Context) {
 		Decode(&outage)
 	if err != nil {
 		c.JSON(http.StatusBadRequest,
-			web.Message{Message: "Database Problem: " + err.Error()})
+			web.OutageResponse{Exception: "Database Problem: " + err.Error()})
 		return
 	}
 	outage.Decrypt()
@@ -270,7 +270,7 @@ func UpdateOutage(c *gin.Context) {
 	case "capability":
 		outage.Capability = data.StringValue()
 	default:
-		c.JSON(http.StatusBadRequest, web.Message{Message: "Unknown Field"})
+		c.JSON(http.StatusBadRequest, web.OutageResponse{Exception: "Unknown Field"})
 		return
 	}
 	outage.Encrypt()
@@ -278,10 +278,10 @@ func UpdateOutage(c *gin.Context) {
 	_, err = config.GetCollection(config.DB, "metrics", "groundoutages").ReplaceOne(ctx,
 		filter, outage)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.Message{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, web.OutageResponse{Exception: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, outage)
+	c.JSON(http.StatusOK, web.OutageResponse{Outage: outage})
 }
 
 func DeleteOutage(c *gin.Context) {
@@ -289,7 +289,7 @@ func DeleteOutage(c *gin.Context) {
 	oId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest,
-			web.Message{Message: "Trouble with request: " + err.Error()})
+			web.OutageResponse{Exception: "Trouble with request: " + err.Error()})
 		return
 	}
 
@@ -299,8 +299,8 @@ func DeleteOutage(c *gin.Context) {
 		context.TODO(), filter)
 	if err != nil {
 		c.JSON(http.StatusBadRequest,
-			web.Message{Message: "Trouble with request: " + err.Error()})
+			web.OutageResponse{Exception: "Trouble with request: " + err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, web.Message{Message: "Outage deleted"})
+	c.JSON(http.StatusOK, web.OutageResponse{Exception: "Outage deleted"})
 }

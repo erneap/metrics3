@@ -92,6 +92,13 @@ export class MissionSensor implements IMissionSensor {
             }
         }
     }
+
+    compareTo(other?: MissionSensor): number {
+        if (other) {
+            return (this.sortID < other.sortID) ? -1 : 1;
+        }
+        return -1;
+    }
 }
 
 export interface IMissionData {
