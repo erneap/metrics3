@@ -11,74 +11,35 @@ import { OutageService } from 'src/app/services/outage.service';
   styleUrls: ['./outages-list.component.scss']
 })
 export class OutagesListComponent {
-  @Input() width: number = 1050;
+  @Input() width: number = 750;
   @Input() height: number = 400;
-  private _start: Date = new Date();
-  @Input()
-  public set start(dt: Date) {
-    if (this._start.getTime() !== dt.getTime()) {
-      this._start = new Date(dt);
-      this.setOutages();
-    }
+  private _outages: GroundOutage[] = [];
+  @Input() 
+  public set outages(outs: GroundOutage[]) {
+    this._outages = [];
+    outs.forEach(out => {
+      this._outages.push(new GroundOutage(out));
+    });
+    this._outages.sort((a,b) => a.compareTo(b));
   }
-  get start(): Date {
-    return this._start;
-  }
-  private _end: Date = new Date();
-  @Input()
-  public set end(dt: Date) {
-    if (this._end.getTime() !== dt.getTime()) {
-      this._end = new Date(dt);
-      this.setOutages();
-    }
-  }
-  get end(): Date {
-    return this._end;
+  get outages(): GroundOutage[] {
+    return this._outages;
   }
   @Output() changed = new EventEmitter<string>();
-  outages: GroundOutage[] = [];
 
   constructor(
     protected authService: AuthService,
     protected outageService: OutageService,
     protected dialogService: DialogService,
   ) {
-    const now = new Date();
-    this.end = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 
-      now.getDate()));
-    this.start = new Date(this.end.getTime() - (365 * 24 * 3600000));
-  }
-
-  setOutages() {
-    this.dialogService.showSpinner();
-    this.outageService.getOutagesForPeriod(this.start, this.end).subscribe({
-      next: (data: OutagesResponse) => {
-        this.dialogService.closeSpinner();
-        this.outages = [];
-        if (data && data !== null && data.outages) {
-          data.outages.forEach(out => {
-            this.outages.push(new GroundOutage(out));
-          });
-          this.outages.sort((a,b) => a.compareTo(b));
-        }
-      },
-      error: (err: OutagesResponse) => {
-        this.dialogService.closeSpinner();
-        this.authService.statusMessage = err.exception;
-      }
-    })
   }
 
   onChanged(change: string) {
-    if (change.toLowerCase() === 'refresh') {
-      this.setOutages();
-    } else {
-      this.changed.emit(change);
-    }
+    this.changed.emit(change);
   }
 
   getStyle(field: string): string {
-    let ratio = this.width / 1050;
+    let ratio = this.width / 800;
     if (ratio > 1.0) ratio = 1.0;
     const fontSize = .8 * ratio;
     let width = 100;
@@ -105,7 +66,10 @@ export class OutagesListComponent {
   }
 
   listStyle(): string {
+    let ratio = this.width / 800;
+    if (ratio > 1.0) ratio = 1.0;
+    const width = Math.floor(800 * ratio);
     const height = this.height - 17;
-    return `width: ${this.width}px;height: ${height}px;`
+    return `width: ${width}px;height: ${height}px;`
   }
 }

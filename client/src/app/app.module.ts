@@ -27,6 +27,7 @@ import { MissionService } from './services/mission.service';
 import { ReviewsModule } from './reviews/reviews.module';
 import { ProfileComponent } from './home/profile/profile.component';
 import { OutagesModule } from './outages/outages.module';
+import { AdminModule } from './admin/admin.module';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { OutagesModule } from './outages/outages.module';
     GenericModule,
     MissionsModule,
     ReviewsModule,
-    OutagesModule
+    OutagesModule,
+    AdminModule
   ],
   exports: [
     DeletionConfirmationComponent

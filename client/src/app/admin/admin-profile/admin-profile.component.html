@@ -1,0 +1,81 @@
+<form [formGroup]="profileForm" class="flexlayout column center" 
+  style="color: white;">
+  <div class="flexlayout row center" style="width: 99%;">
+    <h2>User Profile</h2>
+    <div class="flex-spacer"></div>
+    <button mat-icon-button color="warn">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+  <div class="flexlayout row center">
+    <mat-form-field appearance="fill">
+      <mat-label>E-mail Address</mat-label>
+      <input matInput formControlName="email" (blur)="onUpdate('email')">
+      <mat-error *ngIf="profileForm.controls['email'].hasError('required')"
+        class="error">required</mat-error>
+      <mat-error *ngIf="profileForm.controls['email'].hasError('email')"
+        class="error">must be email address</mat-error>
+    </mat-form-field>
+  </div>
+  <div class="flexlayout row center flexgap">
+    <mat-form-field appearance="fill">
+      <mat-label>First Name</mat-label>
+      <input matInput formControlName="first" (blur)="onUpdate('first')">
+      <mat-error *ngIf="profileForm.controls['first'].hasError('required')"
+        class="error">required</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Middle Name</mat-label>
+      <input matInput formControlName="middle" (blur)="onUpdate('middle')">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Last Name</mat-label>
+      <input matInput formControlName="last" (blur)="onUpdate('last')">
+      <mat-error *ngIf="profileForm.controls['last'].hasError('required')"
+        class="error">required</mat-error>
+    </mat-form-field>
+  </div>
+  <div class="flexlayout row center flexwrap flexgap" 
+    style="padding: 5px;background-color: white;">
+    <mat-checkbox formControlName="geoint" (change)="onUpdate('geoint')">
+      GEOINT</mat-checkbox>
+    <mat-checkbox formControlName="xint" (change)="onUpdate('xint')">
+      XINT</mat-checkbox>
+    <mat-checkbox formControlName="mist" (change)="onUpdate('mist')">
+      DDSA</mat-checkbox>
+    <mat-checkbox formControlName="admin" (change)="onUpdate('admin')">
+      ADMIN</mat-checkbox>
+  </div>
+  <h3>Reset Password</h3>
+  <div class="flexlayout row center flexgap">
+    <mat-form-field appearance="fill">
+      <mat-label>New Password</mat-label>
+      <input matInput formControlName="password" type="password">
+      <mat-error *ngIf="this.profileForm.get('password')?.invalid"
+        class="error">
+        {{getPasswordError()}}
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>New Password</mat-label>
+      <input matInput formControlName="password2" type="password">
+      <mat-error *ngIf="this.profileForm.get('password2')?.invalid"
+        class="error">
+        {{getVerifyError()}}
+      </mat-error>
+    </mat-form-field>
+    <div class="flexlayout row center"
+      *ngIf="user.id !== 'new' && user.id !== '' && getPasswordError() === '' && getVerifyError() === ''">
+      <button mat-raised-button color="warn">Change</button>
+    </div>
+  </div>
+  <div class="flexlayout row center">
+    <button mat-raised-button color="accent" 
+      *ngIf="(user.id === 'new' || user.id === '') && profileForm.valid">
+      Add
+    </button>
+    <button mat-raised-button>
+      Clear
+    </button>
+  </div>
+</form>

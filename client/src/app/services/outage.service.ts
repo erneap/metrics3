@@ -25,7 +25,7 @@ export class OutageService extends CacheService {
 
   public pullAllOutages() {
     this.allOutages = [];
-    const url = '>/api/v2/metrics/outage/';
+    const url = '/api/v2/metrics/outage/';
     this.httpClient.get<OutagesResponse>(url)
       .subscribe({
         next: (data: OutagesResponse) => {
@@ -102,7 +102,7 @@ export class OutageService extends CacheService {
         }
     });
     newOutage.outageNumber = outNum + 1;
-    const url = '>/api/v2/metrics/outage/';
+    const url = '/api/v2/metrics/outage/';
     return this.httpClient.post<OutageResponse>(url, newOutage);
   }
 
@@ -116,8 +116,8 @@ export class OutageService extends CacheService {
     return this.httpClient.put<OutageResponse>(url, data);
   }
 
-  deleteOutage(): Observable<OutageResponse> {
-    const url = `/api/v2/metrics/outage/${this.selectedOutage?.id}`;
+  deleteOutage(id: string): Observable<OutageResponse> {
+    const url = `/api/v2/metrics/outage/${id}`;
     return this.httpClient.delete<OutageResponse>(url);
   }
 }

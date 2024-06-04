@@ -1,18 +1,12 @@
-<div class="flexlayout row center">
+<div class="flexlayout row center" [style]="rowStyle()">
   <div class="data pointer" [style]="getStyle('date')" (click)="onClick()">
     {{getDate(this.outage.outageDate)}}
-  </div>
-  <div class="data pointer" [style]="getStyle('number')" (click)="onClick()">
-    {{this.outage.outageNumber}}
   </div>
   <div class="data pointer" [style]="getStyle('capability')" (click)="onClick()">
     {{this.outage.capability}}
   </div>
   <div class="data pointer" [style]="getStyle('system')" (click)="onClick()">
-    {{this.outage.groundSystem}}
-  </div>
-  <div class="data pointer" [style]="getStyle('classification')" (click)="onClick()">
-    {{this.outage.classification}}
+    {{this.outage.groundSystem}} - {{this.outage.classification}}
   </div>
   <div class="data pointer" [style]="getStyle('problem')" (click)="onClick()">
     {{this.outage.problem}}

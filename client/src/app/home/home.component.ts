@@ -102,6 +102,7 @@ export class HomeComponent {
           this.authService.startTokenRenewal();
           this.authService.statusMessage = "User Login Complete";
           this.getInitialData(id);
+          this.router.navigateByUrl('/missions');
         } else {
           this.loginError = data.exception;
           this.authService.isAuthenticated = false;

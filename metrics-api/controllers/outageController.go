@@ -114,13 +114,14 @@ func GetAllOutagesByPeriod(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, web.OutagesResponse{Exception: err.Error()})
 		return
 	}
-	endDate, err := time.ParseInLocation("2006-01-02", eDate, time.UTC)
+	endDate, err := time.ParseInLocation("2006-01-02 15:04:05", eDate+" 23:59:59",
+		time.UTC)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, web.OutagesResponse{Exception: err.Error()})
 		return
 	}
 
-	filter := bson.M{"outageDate": bson.M{"$gte": startDate, "$lt": endDate}}
+	filter := bson.M{"outageDate": bson.M{"$gte": startDate, "$lte": endDate}}
 
 	var tOutages, outages []interfaces.GroundOutage
 	cursor, err := config.GetCollection(config.DB, "metrics", "groundoutages").Find(context.TODO(),

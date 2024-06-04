@@ -7,12 +7,16 @@ import { ForgotPasswordResetComponent } from './home/forgot-password-reset/forgo
 import { MissionsComponent } from './missions/missions.component';
 import { ReviewsComponent } from './reviews/reviews.component';
 import { ProfileComponent } from './home/profile/profile.component';
+import { OutagesComponent } from './outages/outages.component';
+import { AdminComponent } from './admin/admin.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'missions', component: MissionsComponent },
+  { path: 'outages', component: OutagesComponent },
+  { path: 'admin', component: AdminComponent },
   { path: 'review', component: ReviewsComponent },
   { path: 'reset/start', component: ForgotPasswordComponent },
   { path: 'reset/finish', component: ForgotPasswordResetComponent },

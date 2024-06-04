@@ -15,8 +15,8 @@ export class MustMatchValidator implements Validator {
     if (formGroup) {
         const passwd1 = formGroup.get('password');
         const passwd2 = formGroup.get('password2');
-        if (passwd1 && passwd2){
-            return passwd1.value === passwd2.value 
+        if (passwd1 && passwd2) {
+            return (passwd1.value === passwd2.value && passwd1.value !== '')
                 ? null : { matching: true };
         }
     }

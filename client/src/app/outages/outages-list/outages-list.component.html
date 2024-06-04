@@ -1,16 +1,15 @@
 <div class="flexlayout column center">
   <div class="flexlayout row center">
     <div class="data" [style]="getStyle('date')">Date</div>
-    <div class="data" [style]="getStyle('number')">Number</div>
     <div class="data" [style]="getStyle('capability')">Msn Capability</div>
-    <div class="data" [style]="getStyle('system')">System</div>
-    <div class="data" [style]="getStyle('classification')">Enclave</div>
+    <div class="data" [style]="getStyle('system')">System/Enclave</div>
     <div class="data" [style]="getStyle('problem')">Problem</div>
     <div class="data" [style]="getStyle('delete')">&nbsp;</div>
   </div>
   <div class="list" [style]="listStyle()">
-    <app-outages-list-item *ngFor="let outage of outages"
-      [outage]="outage" [width]="width" (changed)="onChanged($event)">
+    <app-outages-list-item *ngFor="let outage of outages;let i = index"
+      [outage]="outage" [width]="width" (changed)="onChanged($event)"
+      [even]="(i % 2) === 0">
     </app-outages-list-item>
   </div>
 </div>

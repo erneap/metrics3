@@ -1,0 +1,17 @@
+<div class="toplevel" [style]="pageStyle()">
+  <div class="list">
+    <div [class]="itemStyle('new')">Add New User</div>
+    <div *ngFor="let item of users" [class]="itemStyle(item.id)"
+      (click)="onSelect(item.id)">
+      {{item.getFullName()}}
+    </div>
+  </div>
+  <div class="expiredItem expired">Password Expired</div>
+  <div class="lockedItem locked">Account Locked</div>
+  <div class="profileArea">
+    <app-admin-profile [user]="selected"></app-admin-profile>
+  </div>
+  <div class="purgeArea">
+    purge
+  </div>
+</div>

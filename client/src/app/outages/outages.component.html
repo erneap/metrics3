@@ -8,7 +8,7 @@
       </button>
   </div>
   <form [formGroup]="outageForm" class="flexlayout column center">
-    <div class="flexlayout row center">
+    <div class="flexlayout row center flexgap">
       <mat-form-field appearance="fill">
         <mat-label>Ground System</mat-label>
         <mat-select formControlName="system" 
@@ -33,14 +33,75 @@
         <mat-datepicker-toggle matIconSuffix [for]="datepicker"></mat-datepicker-toggle>
         <mat-datepicker #datepicker></mat-datepicker>
       </mat-form-field>
-    </div>
-    <div class="flexlayout row center" 
-      *ngIf="outage.id && (outage.id === 'new' || outage.id === '')">
-      <button mat-raised-button color="accent" (click)="onAdd()">
+      <button mat-raised-button color="accent" (click)="onAdd()" 
+        *ngIf="outage.id && (outage.id === 'new' || outage.id === '')">
         Add
       </button>
     </div>
     <ng-container *ngIf="outage.id && outage.id !== 'new' && outage.id !== ''">
+      <div class="flexlayout row center flexgap">
+        <mat-form-field appearance="fill">
+          <mat-label>Outage Number</mat-label>
+          <input matInput formControlName="outagenumber" type="number"
+            (blur)="updateOutage('outagenumber')">
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Msn Capability</mat-label>
+          <mat-select formControlName="capability"
+            (selectionChange)="updateOutage('capability')">
+            <mat-option value="NMC">NMC</mat-option>
+            <mat-option value="PMC">PMC</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Outage Time (Mins)</mat-label>
+          <input matInput formControlName="outageminutes" type="number"
+            (blur)="updateOutage('outageminutes')">
+        </mat-form-field>
+      </div>
+      <div class="flexlayout row center">
+        <div class="flexlayout row center" style="background-color: white;padding-right: 5px;">
+          <mat-checkbox formControlName="duringmission" 
+            (change)="updateOutage('duringmission')">
+            During Mission
+          </mat-checkbox>
+        </div>
+      </div>
+      <div class="flexlayout row center flexgap">
+        <mat-form-field appearance="fill">
+          <mat-label>Subsystem(s)</mat-label>
+          <input matInput formControlName="subsystems"
+            (blur)="updateOutage('subsystems')">
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Serena Ticket #</mat-label>
+          <input matInput formControlName="reference"
+            (blur)="updateOutage('reference')">
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Major Area</mat-label>
+          <input matInput formControlName="majorarea"
+            (blur)="updateOutage('majorarea')">
+        </mat-form-field>
+      </div>
+      <div class="flexlayout row center">
+        <mat-form-field appearance="fill" [style]="problemStyle()">
+          <mat-label>Problem</mat-label>
+          <textarea matInput formControlName="problem" [style]="problemStyle()"
+            (blur)="updateOutage('problem')">
+          </textarea>
+        </mat-form-field>
+      </div>
+      <div class="flexlayout row center">
+        <mat-form-field appearance="fill" [style]="problemStyle()">
+          <mat-label>Fix Action</mat-label>
+          <textarea matInput formControlName="fixaction" [style]="problemStyle()"
+            (blur)="updateOutage('fixaction')">
+          </textarea>
+        </mat-form-field>
+      </div>
     </ng-container>
   </form>
+  <app-outages-list (changed)="getOutage($event)" 
+    [outages]="outages"></app-outages-list>
 </div>

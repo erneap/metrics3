@@ -14,7 +14,7 @@ export class PasswordStrengthValidator implements Validator {
     const value: string = (control.value && control.value !== null) 
       ? control.value : '';
     if (value === '' || value === null) {
-      return null;
+      return { passwordStrength: true };
     }
     const hasMinimum = (value.length >= 10);
     let upper = 0;

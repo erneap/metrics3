@@ -3,9 +3,11 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { OutageService } from '../services/outage.service';
 import { DialogService } from '../services/dialog-service.service';
-import { IGroundSystem } from '../models/metrics/systems';
+import { IGroundSystem, SystemInfo } from '../models/metrics/systems';
 import { GroundOutage } from '../models/metrics/groundOutage';
-import { OutageResponse } from '../models/web/outageWeb';
+import { OutageResponse, OutagesResponse } from '../models/web/outageWeb';
+import { SystemInfoResponse } from '../models/web/userWeb';
+import { AppStateService } from '../services/app-state.service';
 
 @Component({
   selector: 'app-outages',
@@ -14,28 +16,31 @@ import { OutageResponse } from '../models/web/outageWeb';
 })
 export class OutagesComponent {
   outageForm: FormGroup;
-  listForm: FormGroup;
   enclaves: string[] = [];
   groundSystems: string[] = [];
   outage: GroundOutage = new GroundOutage();
+  start: Date;
+  end: Date;
+  outages: GroundOutage[] = [];
 
   constructor(
     protected authService: AuthService,
     protected outageService: OutageService,
     protected dialogService: DialogService,
+    protected appState: AppStateService,
     private fb: FormBuilder
   ) {
     const now = new Date();
-    const end = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 
+    this.end = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 
       now.getDate()));
-    const start = new Date(end.getTime() - (365 * 24 * 3600000));
+    this.start = new Date(this.end.getTime() - (365 * 24 * 3600000));
     this.outageForm = this.fb.group({
       system: '',
       enclave: '',
       outagedate: new Date(),
-      outagenumber: '',
+      outagenumber: 1,
       capability: 'PMC',
-      outagetime: 0,
+      outageminutes: 0,
       duringmission: false,
       subsystems: '',
       reference: 'FIX_',
@@ -43,10 +48,43 @@ export class OutagesComponent {
       problem: '',
       fixaction: ''
     });
-    this.listForm = fb.group({
-      startdate: start,
-      enddate: end,
-    });
+    if (!authService.systemInfo) {
+      this.dialogService.showSpinner();
+      this.authService.systemData().subscribe({
+        next: (data: SystemInfoResponse) => {
+          this.dialogService.closeSpinner();
+          if (data && data !== null && data.systemInfo) {
+            this.authService.systemInfo = new SystemInfo(data.systemInfo);
+          }
+        },
+        error: (err: SystemInfoResponse) => {
+          this.dialogService.closeSpinner();
+          this.authService.statusMessage = err.exception;
+        }
+      })
+    }
+    this.getOutages();
+  }
+
+  getOutages() {
+    const now = new Date();
+    const start = new Date(now.getTime() - (365 * 24 * 3600000));
+    this.dialogService.showSpinner();
+    this.outageService.getOutagesForPeriod(start, now).subscribe({
+      next: (data: OutagesResponse) => {
+        this.dialogService.closeSpinner();
+        this.outages = [];
+        if (data && data !== null && data.outages) {
+          data.outages.forEach(out => {
+            this.outages.push(new GroundOutage(out));
+          });
+        }
+      },
+      error: (err: OutagesResponse) => {
+        this.dialogService.closeSpinner();
+        this.authService.statusMessage = err.exception;
+      }
+    })
   }
 
   getSystem(): IGroundSystem[] {
@@ -76,19 +114,16 @@ export class OutagesComponent {
     return answer;
   }
 
-  getListStart(): Date {
-    return new Date(this.listForm.value.startdate);
-  }
-
-  getListEnd(): Date {
-    return new Date(this.listForm.value.enddate);
-  }
-
   getOutage(id: string) {
     if (id === 'new') {
       this.outage = new GroundOutage();
       this.outage.id = 'new';
-      this.setOutage()
+      this.setOutage();
+    } else if (id === 'refresh') {
+      this.outage = new GroundOutage();
+      this.outage.id = 'new';
+      this.setOutage();
+      this.getOutages();
     } else {
       this.dialogService.showSpinner();
       this.outageService.getOutage(id).subscribe({
@@ -114,7 +149,7 @@ export class OutagesComponent {
     this.outageForm.controls['outagedate'].setValue(
       new Date(this.outage.outageDate));
     this.outageForm.controls['outagenumber'].setValue(this.outage.outageNumber);
-    this.outageForm.controls['outagetime'].setValue(this.outage.outageMinutes);
+    this.outageForm.controls['outageminutes'].setValue(this.outage.outageMinutes);
     this.outageForm.controls['duringmission'].setValue(this.outage.missionOutage);
     this.outageForm.controls['subsystems'].setValue(this.outage.subSystem);
     this.outageForm.controls['reference'].setValue(this.outage.referenceId);
@@ -133,7 +168,7 @@ export class OutagesComponent {
       if (field.toLowerCase() === 'outagedate') {
         value = this.dateString(oValue);
       } else {
-        value = oValue;
+        value = `${oValue}`;
       }
       this.dialogService.showSpinner();
       this.outageService.updateOutage(this.outage.id, field, value).subscribe({
@@ -142,6 +177,7 @@ export class OutagesComponent {
           if (data && data !== null && data.outage) {
             this.outage = new GroundOutage(data.outage);
             this.setOutage();
+            this.getOutages();
           }
         },
         error: (err: OutageResponse) => {
@@ -164,6 +200,7 @@ export class OutagesComponent {
           if (data && data !== null && data.outage) {
             this.outage = new GroundOutage(data.outage);
             this.setOutage();
+            this.getOutages();
           }
         },
         error: (err: OutageResponse) => {
@@ -191,5 +228,12 @@ export class OutagesComponent {
     }
     answer += `${dt.getDate()}`;
     return answer;
+  }
+
+  problemStyle(): string {
+    let ratio = this.appState.viewWidth / 800;
+    if (ratio > 1.0) ratio = 1.0;
+    const width = Math.floor(750 * ratio);
+    return `width: ${width}px;font-size: ${ratio}rem;`;
   }
 }
