@@ -28,6 +28,7 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { ProfileComponent } from './home/profile/profile.component';
 import { OutagesModule } from './outages/outages.module';
 import { AdminModule } from './admin/admin.module';
+import { UsedEmailValidator } from './models/validators/used-email-validator.directive';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { AdminModule } from './admin/admin.module';
     PtoHolidayBelowDialogComponent,
     HeaderComponent,
     StatusbarComponent,
-    ProfileComponent
+    ProfileComponent,
+    UsedEmailValidator
   ],
   imports: [
     BrowserModule,

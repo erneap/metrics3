@@ -9,7 +9,8 @@
   <div class="expiredItem expired">Password Expired</div>
   <div class="lockedItem locked">Account Locked</div>
   <div class="profileArea">
-    <app-admin-profile [user]="selected"></app-admin-profile>
+    <app-admin-profile [user]="selected" (changed)="onChange($event)">
+    </app-admin-profile>
   </div>
   <div class="purgeArea">
     purge

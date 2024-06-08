@@ -1,8 +1,14 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { Title } from '@angular/platform-browser';
+import { DeletionConfirmationComponent } from 'src/app/generic/deletion-confirmation/deletion-confirmation.component';
 import { IUser, User } from 'src/app/models/users/user';
 import { MustMatchValidator } from 'src/app/models/validators/must-match-validator.directive';
 import { PasswordStrengthValidator } from 'src/app/models/validators/password-strength-validator.directive';
+import { UsedEmailValidator } from 'src/app/models/validators/used-email-validator.directive';
+import { AuthenticationResponse } from 'src/app/models/web/employeeWeb';
+import { UserResponse, UsersResponse } from 'src/app/models/web/userWeb';
 import { AuthService } from 'src/app/services/auth.service';
 import { DialogService } from 'src/app/services/dialog-service.service';
 
@@ -22,16 +28,19 @@ export class AdminProfileComponent {
     return this._user;
   }
   @Input() width: number = 800;
-  @Output() changed = new EventEmitter<string>();
+  @Output() changed = new EventEmitter<User>();
   profileForm: FormGroup;
 
   constructor(
     protected authService: AuthService,
     protected dialogService: DialogService,
+    private dialog: MatDialog,
     private fb: FormBuilder
   ) {
     this.profileForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      id: '',
+      email: ['', [Validators.required, Validators.email, 
+        new UsedEmailValidator(this.authService)]],
       first: ['', [Validators.required]],
       middle: '',
       last: ['', [Validators.required]],
@@ -45,6 +54,7 @@ export class AdminProfileComponent {
   }
 
   setUser() {
+    this.profileForm.controls['id'].setValue(this.user.id);
     this.profileForm.controls['email'].setValue(this.user.emailAddress);
     this.profileForm.controls['first'].setValue(this.user.firstName);
     this.profileForm.controls['middle'].setValue(this.user.middleName);
@@ -90,28 +100,109 @@ export class AdminProfileComponent {
   }
 
   onAdd() {
-    this.changed.emit('refresh')
+    if (this.profileForm.valid) {
+      const email = this.profileForm.controls['email'].value;
+      const first = this.profileForm.controls['first'].value;
+      const middle = this.profileForm.controls['middle'].value;
+      const last = this.profileForm.controls['last'].value;
+      const passwd = this.profileForm.controls['password'].value;
+      let perms: string[] = [];
+      if (this.profileForm.controls['geoint'].value) {
+        perms.push('geoint')
+      }
+      if (this.profileForm.controls['xint'].value) {
+        perms.push('xint')
+      }
+      if (this.profileForm.controls['mist'].value) {
+        perms.push('mist')
+      }
+      if (this.profileForm.controls['admin'].value) {
+        perms.push('admin');
+      }
+
+      this.dialogService.showSpinner();
+      this.authService.addUser(email, first, middle, last, passwd, perms)
+      .subscribe({
+        next: (data: UserResponse) => {
+          this.dialogService.closeSpinner();
+          if (data && data !== null && data.user) {
+            this.user = data.user;
+          }
+        },
+        error: (err: UserResponse) => {
+          this.dialogService.closeSpinner();
+          this.authService.statusMessage = err.exception;
+        }
+      });
+    } else {
+      alert('Form not valid');
+    }
+    this.changed.emit(this.user)
   }
 
   onUpdate(field: string) {
-    if (this.user.id !== 'new' && this.user.id !== '') {
-      let change = field;
-      let value = this.profileForm.controls[field].value;
-      switch (field.toLowerCase()) {
-        case "geoint":
-        case "xint":
-        case "mist":
-        case "admin":
+    if (this.profileForm.valid) {
+      if (this.user.id !== 'new' && this.user.id !== '') {
+        let change = field;
+        let value = this.profileForm.controls[field].value;
+        switch (field.toLowerCase()) {
+          case "geoint":
+          case "xint":
+          case "mist":
+          case "admin":
+            if (`${value}`.toLowerCase() === 'true') {
+              change = 'addperm';
+            } else {
+              change = 'removeperm';
+            }
+            value = `metrics-${field.toLowerCase()}`;
+        }
+        this.dialogService.showSpinner();
+        this.authService.changeUser(this.user.id, change, value).subscribe({
+          next: (data: AuthenticationResponse) => {
+            this.dialogService.closeSpinner();
+            if (data && data !== null && data.user) {
+              this.user = data.user;
+            }
+          },
+          error: (err: AuthenticationResponse) => {
+            this.dialogService.closeSpinner();
+            this.authService.statusMessage = err.exception;
+          }
+        });
+        this.changed.emit(this.user);
       }
-      this.changed.emit('update');
     }
   }
 
   onDelete() {
-
+    const dialogRef = this.dialog.open(DeletionConfirmationComponent, {
+      width: '300px',
+      data: {
+        title: "Delete User Confirmation",
+        message: "Are you sure you want to delete this user?",
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      this.dialogService.showSpinner();
+      this.authService.deleteUser(this.user.id).subscribe({
+        next: (data: UsersResponse) => {
+          this.dialogService.closeSpinner();
+          if (data && data !== null && data.users) {
+            this.authService.setUsers(data.users);
+            const user = new User();
+            user.id = 'delete';
+          }
+        },
+        error: (err: UsersResponse) => {
+          this.dialogService.closeSpinner();
+          this.authService.statusMessage = err.exception;
+        }
+      });
+    });
   }
 
   onClear() {
-    this.changed.emit('clear');
+    this.changed.emit(this.user);
   }
 }

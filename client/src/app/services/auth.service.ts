@@ -4,11 +4,11 @@ import { IUser, User } from '../models/users/user';
 import { AuthenticationRequest, AuthenticationResponse, ChangePasswordRequest, 
   EmployeeResponse, InitialResponse, UpdateRequest }
   from '../models/web/employeeWeb';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of, tap } from 'rxjs';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import jwt_decode from 'jwt-decode';
-import { ExceptionResponse, PasswordResetRequest, SystemInfoResponse, UsersResponse } from '../models/web/userWeb';
+import { AddUserRequest, ExceptionResponse, PasswordResetRequest, SystemInfoResponse, UserResponse, UsersResponse } from '../models/web/userWeb';
 import { DialogService } from './dialog-service.service';
 import { ViewState } from '../models/state/viewstate';
 import { SystemInfo } from '../models/metrics/systems';
@@ -264,14 +264,42 @@ export class AuthService extends CacheService {
     return this.httpClient.put<AuthenticationResponse>(url, data)
   }
 
-  getAllUsers(): Observable<UsersResponse> {
-    const url = '/api/v2/authentication/users';
-    return this.httpClient.get<UsersResponse>(url);
+  setUsers(users: IUser[]) {
+    this.setItem('userlist', users)
   }
 
-  addUser(user: User): Observable<UsersResponse> {
-    const url = '/api/v2/authentication/user/'
-    return this.httpClient.post<UsersResponse>(url, user);
+  getUsers(): IUser[] | undefined {
+    return this.getItem<IUser[]>('userlist');
+  }
+
+  clearUsers() {
+    this.removeItem('userlist');
+  }
+
+  getAllUsers(): Observable<UsersResponse> {
+    const url = '/api/v2/authentication/users';
+    return this.httpClient.get<UsersResponse>(url).pipe(
+      tap<UsersResponse>(x =>{
+        if (x.users) {
+          this.setUsers(x.users);
+        }
+      })
+    );
+  }
+
+  addUser(email: string, first: string, middle: string, last: string, 
+    passwd: string, perms: string[]): Observable<UserResponse> {
+    const url = '/api/v2/authentication/user/';
+    const addUser: AddUserRequest = {
+      emailAddress: email,
+      firstName: first,
+      middleName: middle,
+      lastName: last,
+      password: passwd,
+      application: 'metrics',
+      permissions: perms
+    };
+    return this.httpClient.post<UserResponse>(url, addUser);
   }
 
   initialData(id: string): Observable<InitialResponse> {
@@ -282,6 +310,11 @@ export class AuthService extends CacheService {
   systemData(): Observable<SystemInfoResponse> {
     const url = '/api/v2/metrics/system';
     return this.httpClient.get<SystemInfoResponse>(url);
+  }
+
+  deleteUser(id: string): Observable<UsersResponse> {
+    const url = `/api/v2/authentication/user/${id}`;
+    return this.httpClient.delete<UsersResponse>(url);
   }
 }
 

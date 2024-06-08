@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { ListItem } from '../generic/button-list/listitem';
-import { User } from '../models/users/user';
+import { IUser, User } from '../models/users/user';
 import { AuthService } from '../services/auth.service';
 import { AppStateService } from '../services/app-state.service';
 import { DialogService } from '../services/dialog-service.service';
@@ -45,28 +45,37 @@ export class AdminComponent {
     this.width = this.appState.viewWidth;
     this.height = this.appState.viewHeight - 12;
     this.selected = new User();
+    this.authService.clearUsers();
     this.setUsers();
   }
 
   setUsers() {
     this.users = [];
-    this.dialogService.showSpinner();
-    this.authService.getAllUsers().subscribe({
-      next: (data: UsersResponse) => {
-        this.dialogService.closeSpinner();
-        if (data && data !== null && data.users) {
-          data.users.forEach(u => {
-            const usr = new User(u);
-            this.users.push(new User(u));
-          });
-          this.users.sort((a,b) => a.compareTo(b));
+    const users = this.authService.getUsers();
+    if (users) {
+      users.forEach(usr => {
+        this.users.push(new User(usr));
+      });
+      this.users.sort((a,b) => a.compareTo(b));
+    } else {
+      this.dialogService.showSpinner();
+      this.authService.getAllUsers().subscribe({
+        next: (data: UsersResponse) => {
+          this.dialogService.closeSpinner();
+          if (data && data !== null && data.users) {
+            data.users.forEach(u => {
+              const usr = new User(u);
+              this.users.push(new User(u));
+            });
+            this.users.sort((a,b) => a.compareTo(b));
+          }
+        },
+        error: (err: UsersResponse) => {
+          this.dialogService.closeSpinner();
+          this.authService.statusMessage = err.exception;
         }
-      },
-      error: (err: UsersResponse) => {
-        this.dialogService.closeSpinner();
-        this.authService.statusMessage = err.exception;
-      }
-    });
+      });
+    }
   }
 
   onSelect(id: string) {
@@ -82,9 +91,43 @@ export class AdminComponent {
     }
   }
 
-  onChange(chg: string) {
-    if (chg.toLowerCase() === 'refresh') {
-      this.setUsers();
+  onChange(user: IUser) {
+    if (user.id === 'new' || user.id === '') {
+      this.selected = new User();
+    } else if (user.id === 'delete') {
+      const users = this.authService.getUsers();
+      if (users) {
+        let found = -1;
+        for (let i = 0; i < users.length && found < 0; i++) {
+          if (this.selected.id === users[i].id) {
+            found = i;
+          }
+        }
+        if (found >= 0) {
+          users.splice(found, 1);
+        }
+        this.authService.setUsers(users);
+      }
+    } else {
+      let users = this.authService.getUsers();
+      let found = false;
+      if (users) {
+        for (let i = 0; i < users.length && !found; i++) {
+          if (users[i].id === user.id) {
+            users[i] = new User(user);
+            found = true;
+          }
+        }
+        if (!found) {
+          users.push(new User(user));
+        }
+        this.authService.setUsers(users);
+      } else {
+        users = [];
+        users.push(new User(user));
+        this.authService.setUsers(users);
+      }
+      this.selected = new User(user);
     }
   }
 
