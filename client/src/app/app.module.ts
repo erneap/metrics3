@@ -1,4 +1,4 @@
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -30,43 +30,35 @@ import { OutagesModule } from './outages/outages.module';
 import { AdminModule } from './admin/admin.module';
 import { UsedEmailValidator } from './models/validators/used-email-validator.directive';
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    WaitDialogComponent,
-    PasswordExpireDialogComponent,
-    NavigationMenuComponent,
-    NotFoundComponent,
-    DeletionConfirmationComponent,
-    ForgotPasswordComponent,
-    ForgotPasswordResetComponent,
-    PtoHolidayBelowDialogComponent,
-    HeaderComponent,
-    StatusbarComponent,
-    ProfileComponent,
-    UsedEmailValidator
-  ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    AppRoutingModule,
-    MaterialModule,
-    FormsModule,
-    ReactiveFormsModule,
-    GenericModule,
-    MissionsModule,
-    ReviewsModule,
-    OutagesModule,
-    AdminModule
-  ],
-  exports: [
-    DeletionConfirmationComponent
-  ],
-  providers: [AuthService, DialogService, interceptorProviders,
-    AppStateService, MissionService
-  ],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        HomeComponent,
+        WaitDialogComponent,
+        PasswordExpireDialogComponent,
+        NavigationMenuComponent,
+        NotFoundComponent,
+        DeletionConfirmationComponent,
+        ForgotPasswordComponent,
+        ForgotPasswordResetComponent,
+        PtoHolidayBelowDialogComponent,
+        HeaderComponent,
+        StatusbarComponent,
+        ProfileComponent,
+        UsedEmailValidator
+    ],
+    exports: [
+        DeletionConfirmationComponent
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        BrowserAnimationsModule,
+        AppRoutingModule,
+        MaterialModule,
+        FormsModule,
+        ReactiveFormsModule,
+        GenericModule,
+        MissionsModule,
+        ReviewsModule,
+        OutagesModule,
+        AdminModule], providers: [AuthService, DialogService, interceptorProviders,
+        AppStateService, MissionService, provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }
