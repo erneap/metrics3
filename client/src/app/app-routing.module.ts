@@ -9,6 +9,7 @@ import { ReviewsComponent } from './reviews/reviews.component';
 import { ProfileComponent } from './home/profile/profile.component';
 import { OutagesComponent } from './outages/outages.component';
 import { AdminComponent } from './admin/admin.component';
+import { ReportsComponent } from './reports/reports.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -17,6 +18,7 @@ const routes: Routes = [
   { path: 'missions', component: MissionsComponent },
   { path: 'outages', component: OutagesComponent },
   { path: 'admin', component: AdminComponent },
+  { path: 'reports', component: ReportsComponent },
   { path: 'review', component: ReviewsComponent },
   { path: 'reset/start', component: ForgotPasswordComponent },
   { path: 'reset/finish', component: ForgotPasswordResetComponent },

@@ -30,7 +30,7 @@ RUN go build -o /go/bin/metrics-api
 ################################
 # Step 2 Build the small image
 ################################
-FROM scratch
+FROM debian:bookworm-slim
 
 ADD . /data/reports
 ADD . /data/logs

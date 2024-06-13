@@ -17,6 +17,6 @@ export class StatusbarComponent {
   }
 
   goToMetrics() {
-    window.location.href = '/scheduler';
+    window.location.href = '/scheduler3';
   }
 }

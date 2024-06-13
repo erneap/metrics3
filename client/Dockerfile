@@ -9,9 +9,9 @@ RUN npm run build
 FROM nginx:1.27.0-alpine-slim
 RUN mkdir -p /usr/share/nginx/html/metrics3
 ADD . /data/reports
-COPY --from=build /app/dist/metrics-client/browser /usr/share/nginx/html/scheduler3/
+COPY --from=build /app/dist/metrics-client/browser /usr/share/nginx/html/metrics3/
 COPY --from=build /app/metrics.conf /etc/nginx/conf.d/metrics.conf
 
-RUN chown -R nginx:nginx /usr/share/nginx/html/scheduler3
+RUN chown -R nginx:nginx /usr/share/nginx/html/metrics3
 
 EXPOSE 8093

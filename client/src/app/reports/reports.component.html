@@ -1,0 +1,52 @@
+<form [formGroup]="reportForm" class="flexlayout column center">
+  <div class="flexlayout row center flexgap">
+    <mat-form-field appearance="fill">
+      <mat-label>Report</mat-label>
+      <mat-select formControlName="report">
+        <mat-option *ngFor="let rtype of reports"
+          [value]="rtype">{{rtype}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Report Period</mat-label>
+      <mat-select formControlName="period">
+        <mat-option *ngFor="let rtype of periods"
+          [value]="rtype">{{rtype}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Report Limits</mat-label>
+      <mat-select formControlName="limits">
+        <mat-option *ngFor="let rtype of includes"
+          [value]="rtype">{{rtype}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="flexlayout row center flexgap">
+    <mat-form-field appearance="fill">
+      <mat-label>Start Date</mat-label>
+      <input matInput [matDatepicker]="datepicker"
+        formControlName="startDate">
+      <mat-datepicker-toggle matIconSuffix [for]="datepicker"></mat-datepicker-toggle>
+      <mat-datepicker #datepicker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="fill" >
+      <mat-label>End Date</mat-label>
+      <input matInput [matDatepicker]="datepicker2"
+        formControlName="endDate">
+      <mat-datepicker-toggle matIconSuffix [for]="datepicker2"></mat-datepicker-toggle>
+      <mat-datepicker #datepicker2></mat-datepicker>
+    </mat-form-field>
+  </div>
+  <div class="flexlayout row center"  *ngIf="showDaily()">
+    <mat-checkbox formControlName="daily" 
+      style="background-color: white;padding-right: 5px;">
+      Include Daily Reports
+    </mat-checkbox>
+  </div>
+  <div class="flexlayout row center" style="margin-top: 10px;">
+    <button mat-raised-button color="accent" (click)="createReport()">
+      Create Report
+    </button>
+  </div>
+</form>

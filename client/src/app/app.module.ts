@@ -1,8 +1,6 @@
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
@@ -29,6 +27,11 @@ import { ProfileComponent } from './home/profile/profile.component';
 import { OutagesModule } from './outages/outages.module';
 import { AdminModule } from './admin/admin.module';
 import { UsedEmailValidator } from './models/validators/used-email-validator.directive';
+import { FormsModule } from '@angular/forms';
+import { AdminService } from './services/admin.service';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ReportsModule } from './reports/reports.module';
 
 @NgModule({ declarations: [
         AppComponent,
@@ -49,7 +52,9 @@ import { UsedEmailValidator } from './models/validators/used-email-validator.dir
     exports: [
         DeletionConfirmationComponent
     ],
-    bootstrap: [AppComponent], imports: [BrowserModule,
+    bootstrap: [AppComponent], 
+    imports: [
+        BrowserModule,
         BrowserAnimationsModule,
         AppRoutingModule,
         MaterialModule,
@@ -59,6 +64,9 @@ import { UsedEmailValidator } from './models/validators/used-email-validator.dir
         MissionsModule,
         ReviewsModule,
         OutagesModule,
-        AdminModule], providers: [AuthService, DialogService, interceptorProviders,
-        AppStateService, MissionService, provideHttpClient(withInterceptorsFromDi())] })
+        AdminModule,
+        ReportsModule ], 
+    providers: [AuthService, DialogService, interceptorProviders,
+        AppStateService, MissionService, AdminService,
+        provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }

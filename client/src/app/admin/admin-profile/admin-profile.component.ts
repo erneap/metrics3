@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { Title } from '@angular/platform-browser';
 import { DeletionConfirmationComponent } from 'src/app/generic/deletion-confirmation/deletion-confirmation.component';
 import { IUser, User } from 'src/app/models/users/user';
 import { MustMatchValidator } from 'src/app/models/validators/must-match-validator.directive';

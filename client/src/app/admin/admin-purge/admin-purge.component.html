@@ -1,1 +1,19 @@
-<p>admin-purge works!</p>
+<div class="flexlayout column topleft">
+  <h3 style="color: white;">Mission/Outage Purging</h3>
+  <form [formGroup]="purgeForm" class="flexlayout row topleft flexgap">
+    <div class="flexlayout row topleft whitefield">
+      <mat-checkbox formControlName="mission">Missions</mat-checkbox>
+      <mat-checkbox formControlName="outages">Outages</mat-checkbox>
+    </div>
+    <mat-form-field appearance="fill">
+      <mat-label>Purge Date</mat-label>
+      <input matInput [matDatepicker]="datepicker"
+        formControlName="purgedate">
+      <mat-datepicker-toggle matIconSuffix [for]="datepicker"></mat-datepicker-toggle>
+      <mat-datepicker #datepicker></mat-datepicker>
+    </mat-form-field>
+    <button mat-raised-button color="accent" (click)="verifyPurge()">
+      Purge
+    </button>
+  </form>
+</div>

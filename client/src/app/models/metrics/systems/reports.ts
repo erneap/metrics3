@@ -14,7 +14,7 @@ export enum ReportPeriod {
   CUSTOM = 0,
 }
 
-export enum Report {
+export enum Reports {
   MSN_SUMMARY = "Mission Summary",
   DRAW = "DRAW Summary",
   XINT = "XINT Summary",
