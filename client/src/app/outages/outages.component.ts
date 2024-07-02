@@ -8,11 +8,22 @@ import { GroundOutage } from '../models/metrics/groundOutage';
 import { OutageResponse, OutagesResponse } from '../models/web/outageWeb';
 import { SystemInfoResponse } from '../models/web/userWeb';
 import { AppStateService } from '../services/app-state.service';
+import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 
 @Component({
   selector: 'app-outages',
   templateUrl: './outages.component.html',
-  styleUrls: ['./outages.component.scss']
+  styleUrls: ['./outages.component.scss'],
+  providers: [
+    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true}},
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
+    },
+    {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
+  ]
 })
 export class OutagesComponent {
   outageForm: FormGroup;
@@ -31,8 +42,8 @@ export class OutagesComponent {
     private fb: FormBuilder
   ) {
     const now = new Date();
-    this.end = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 
-      now.getDate()));
+    this.end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 
+      now.getUTCDate()));
     this.start = new Date(this.end.getTime() - (365 * 24 * 3600000));
     this.outageForm = this.fb.group({
       system: '',
@@ -218,15 +229,15 @@ export class OutagesComponent {
   }
 
   dateString(dt: Date): string {
-    let answer = `${dt.getFullYear()}-`;
-    if (dt.getMonth() < 9) {
+    let answer = `${dt.getUTCFullYear()}-`;
+    if (dt.getUTCMonth() < 9) {
       answer += '0';
     }
-    answer += `${dt.getMonth() + 1}/`;
-    if (dt.getDate() < 10) {
+    answer += `${dt.getUTCMonth() + 1}/`;
+    if (dt.getUTCDate() < 10) {
       answer += '0';
     }
-    answer += `${dt.getDate()}`;
+    answer += `${dt.getUTCDate()}`;
     return answer;
   }
 

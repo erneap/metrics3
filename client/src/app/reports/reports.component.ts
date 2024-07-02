@@ -45,8 +45,8 @@ export class ReportsComponent {
       report: Reports.MSN_SUMMARY,
       reportPeriod: ReportPeriod.WEEKLY,
       reportType: ReportType.FULL_REPORT,
-      startDate: new Date(Date.UTC(start.getFullYear(), start.getMonth(), 
-        start.getDate())),
+      startDate: new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), 
+        start.getUTCDate())),
       endDate: undefined,
       includeDaily: this.reportForm.value.daily,
     }
@@ -97,8 +97,8 @@ export class ReportsComponent {
     }
     if (request.reportPeriod === ReportPeriod.CUSTOM) {
       const end = new Date(this.reportForm.value.endDate);
-      request.endDate = new Date(Date.UTC(end.getFullYear(), end.getMonth(),
-        end.getDate(), 23, 59, 59, 999));
+      request.endDate = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth(),
+        end.getUTCDate(), 23, 59, 59, 999));
     }
     this.dialogService.showSpinner();
     this.httpClient.post(url, request, 

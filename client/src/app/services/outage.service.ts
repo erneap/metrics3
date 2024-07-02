@@ -48,27 +48,27 @@ export class OutageService extends CacheService {
   }
 
   public getOutagesForWeek(outdate: Date): Observable<OutagesResponse> {
-    const url = `/api/v2/metrics/outage/byweek/${this.getDateString(outdate)}`
+    const url = `/api/v2/metrics/outage/byweek/${this.getUTCDateString(outdate)}`
     return this.httpClient.get<OutagesResponse>(url)
   }
 
   public getOutagesForPeriod(sDate: Date, eDate: Date): 
     Observable<OutagesResponse> {
     const url = `/api/v2/metrics/outage/byperiod/`
-      + `${this.getDateString(sDate)}/${this.getDateString(eDate)}`;
+      + `${this.getUTCDateString(sDate)}/${this.getUTCDateString(eDate)}`;
     return this.httpClient.get<OutagesResponse>(url)
   }
 
-  private getDateString(date: Date): string {
-    let outageDate = `${date.getFullYear()}-`;
-    if (date.getMonth() + 1 < 10) {
+  private getUTCDateString(date: Date): string {
+    let outageDate = `${date.getUTCFullYear()}-`;
+    if (date.getUTCMonth() + 1 < 10) {
       outageDate += "0";
     }
-    outageDate += `${date.getMonth() + 1}-`;
-    if (date.getDate() < 10) {
+    outageDate += `${date.getUTCMonth() + 1}-`;
+    if (date.getUTCDate() < 10) {
       outageDate += "0";
     }
-    outageDate += `${date.getDate()}`
+    outageDate += `${date.getUTCDate()}`
     return outageDate;
   }
 
@@ -89,13 +89,13 @@ export class OutageService extends CacheService {
     };
 
     const outDate = new Date(outagedate);
-    const reqDate = new Date(Date.UTC(outDate.getFullYear(), outDate.getMonth(),
-      outDate.getDate()));
+    const reqDate = new Date(Date.UTC(outDate.getUTCFullYear(), outDate.getUTCMonth(),
+      outDate.getUTCDate()));
     let outNum = 0;
     this.allOutages.forEach(gndOut => {
       const gDate = new Date(gndOut.outageDate);
       if (gndOut.groundSystem === system && gndOut.classification === enclave
-        && gDate.getDate() === reqDate.getTime()) {
+        && gDate.getUTCDate() === reqDate.getTime()) {
           if (gndOut.outageNumber > outNum) {
             outNum = gndOut.outageNumber;
           }

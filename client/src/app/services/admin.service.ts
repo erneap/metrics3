@@ -16,29 +16,29 @@ export class AdminService extends CacheService {
   }
 
   purgeMissions(purgeDate: Date): Observable<Object> {
-    const pDate = new Date(Date.UTC(purgeDate.getFullYear(), 
-      purgeDate.getMonth(), purgeDate.getDate()));
+    const pDate = new Date(Date.UTC(purgeDate.getUTCFullYear(), 
+      purgeDate.getUTCMonth(), purgeDate.getUTCDate()));
     const url = `/metrics/api/v1/admin/missions/${this.dateString(pDate)}`;
     return this.httpClient.delete(url);
   }
 
   purgeOutages(purgeDate: Date): Observable<Object> {
-    const pDate = new Date(Date.UTC(purgeDate.getFullYear(), 
-      purgeDate.getMonth(), purgeDate.getDate()));
+    const pDate = new Date(Date.UTC(purgeDate.getUTCFullYear(), 
+      purgeDate.getUTCMonth(), purgeDate.getUTCDate()));
     const url = `/metrics/api/v1/admin/outages/${this.dateString(pDate)}`;
     return this.httpClient.delete(url);
   }
 
   private dateString(msndate:Date): string {
-    let sDate = `${msndate.getFullYear()}-`;
-    if (msndate.getMonth() + 1 < 10) {
+    let sDate = `${msndate.getUTCFullYear()}-`;
+    if (msndate.getUTCMonth() + 1 < 10) {
       sDate += "0";
     }
-    sDate += `${msndate.getMonth() + 1}-`;
-    if (msndate.getDate() < 10) {
+    sDate += `${msndate.getUTCMonth() + 1}-`;
+    if (msndate.getUTCDate() < 10) {
       sDate += "0";
     }
-    sDate += `${msndate.getDate()}`;
+    sDate += `${msndate.getUTCDate()}`;
     return sDate
   }
 }

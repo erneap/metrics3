@@ -25,10 +25,10 @@ export class MissionService extends CacheService {
 
   getMissionsByDates(startdate: Date, enddate:Date): 
     Observable<MissionsResponse> {
-    const startDate = new Date(Date.UTC(startdate.getFullYear(), 
-      startdate.getMonth(), startdate.getDate()));
-    const endDate = new Date(Date.UTC(enddate.getFullYear(), 
-      enddate.getMonth(), enddate.getDate()));
+    const startDate = new Date(Date.UTC(startdate.getUTCFullYear(), 
+      startdate.getUTCMonth(), startdate.getUTCDate()));
+    const endDate = new Date(Date.UTC(enddate.getUTCFullYear(), 
+      enddate.getUTCMonth(), enddate.getUTCDate()));
     const url = `/api/v2/metrics/mission/dates/${this.dateString(startDate)}/`
       + `${this.dateString(endDate)}`;
     return this.httpClient.get<MissionsResponse>(url);
@@ -47,9 +47,9 @@ export class MissionService extends CacheService {
 
   createMission(platform: string, msndate: Date, sortie: number): 
     Observable<MissionResponse> {
-    const msnDate = new Date(Date.UTC(msndate.getFullYear(), msndate.getMonth(), 
-      msndate.getDate()));
-    const url = '>/api/v2/metrics/mission/';
+    const msnDate = new Date(Date.UTC(msndate.getUTCFullYear(), msndate.getUTCMonth(), 
+      msndate.getUTCDate()));
+    const url = '/api/v2/metrics/mission/';
     const newMission: CreateMission = {
       missionDate: new Date(msnDate),
       platformID: platform,
@@ -117,21 +117,21 @@ export class MissionService extends CacheService {
     return this.httpClient.put<MissionResponse>(url, change);
   }
 
-  deleteMission(): Observable<MissionResponse> {
-    const url = `/api/v2/metrics/mission/${this.selectedMission?.id}`;
+  deleteMission(id: string): Observable<MissionResponse> {
+    const url = `/api/v2/metrics/mission/${id}`;
     return this.httpClient.delete<MissionResponse>(url);
   }
 
   private dateString(msndate:Date): string {
-    let sDate = `${msndate.getFullYear()}-`;
-    if (msndate.getMonth() + 1 < 10) {
+    let sDate = `${msndate.getUTCFullYear()}-`;
+    if (msndate.getUTCMonth() + 1 < 10) {
       sDate += "0";
     }
-    sDate += `${msndate.getMonth() + 1}-`;
-    if (msndate.getDate() < 10) {
+    sDate += `${msndate.getUTCMonth() + 1}-`;
+    if (msndate.getUTCDate() < 10) {
       sDate += "0";
     }
-    sDate += `${msndate.getDate()}`;
+    sDate += `${msndate.getUTCDate()}`;
     return sDate
   }
 }

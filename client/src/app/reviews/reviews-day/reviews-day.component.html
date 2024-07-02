@@ -1,5 +1,5 @@
 <div class="flexlayout column center">
-  <div class="day" [style]="dayStyle()">{{getDate()}}</div>
+  <div class="day" [style]="dayStyle()">{{getUTCDate()}}</div>
   <ng-container *ngIf="this.day.missions.length <= 0">
     <div class="nomissions" [style]="dayStyle()">
       No Missions Entered for this Date!

@@ -19,16 +19,16 @@ export class ReviewsDayComponent {
     return `width: ${width}px;height: ${height}px;font-size: ${ratio}rem;`;
   }
 
-  getDate(): string {
+  getUTCDate(): string {
     let answer = '';
     let months = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", 
       "Aug", "Sep", "Oct", "Nov", "Dec");
     let weekDays = new Array('Sun', 'Mon', 'Tue', 'Wed', "Thu", "Fri", 'Sat');
-    if (this.day.day.getDate() < 10) {
+    if (this.day.day.getUTCDate() < 10) {
       answer += "0";
     }
-    answer += `${this.day.day.getDate()} ${months[this.day.day.getMonth()]} `
-      + `${this.day.day.getFullYear()} (${weekDays[this.day.day.getDay()]})`;
+    answer += `${this.day.day.getUTCDate()} ${months[this.day.day.getUTCMonth()]} `
+      + `${this.day.day.getUTCFullYear()} (${weekDays[this.day.day.getUTCDay()]})`;
     return answer;
   }
 }

@@ -36,8 +36,8 @@ export class AdminPurgeComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result.toLowerCase() === 'yes') {
         const fDate = new Date(this.purgeForm.value.purgedate);
-        const pDate = new Date(Date.UTC(fDate.getFullYear(), fDate.getMonth(),
-          fDate.getDate()));
+        const pDate = new Date(Date.UTC(fDate.getUTCFullYear(), fDate.getUTCMonth(),
+          fDate.getUTCDate()));
 
         if (this.purgeForm.value.mission) {
           this.dialogService.showSpinner();

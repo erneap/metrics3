@@ -1,6 +1,6 @@
 <div class="flexlayout row center" [style]="rowStyle()">
   <div class="data pointer" [style]="getStyle('date')" (click)="onClick()">
-    {{getDate(this.outage.outageDate)}}
+    {{getUTCDate(this.outage.outageDate)}}
   </div>
   <div class="data pointer" [style]="getStyle('capability')" (click)="onClick()">
     {{this.outage.capability}}

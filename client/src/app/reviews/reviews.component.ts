@@ -7,11 +7,22 @@ import { MissionService } from '../services/mission.service';
 import { DialogService } from '../services/dialog-service.service';
 import { MissionsResponse } from '../models/web/missionsWeb';
 import { Mission } from '../models/metrics/mission';
+import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 
 @Component({
   selector: 'app-reviews',
   templateUrl: './reviews.component.html',
-  styleUrls: ['./reviews.component.scss']
+  styleUrls: ['./reviews.component.scss'],
+  providers: [
+    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true}},
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
+    },
+    {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
+  ]
 })
 export class ReviewsComponent {
   days: ReviewDay[] = [];
@@ -26,7 +37,8 @@ export class ReviewsComponent {
     private fb: FormBuilder
   ) {
     let end = new Date();
-    end = new Date(Date.UTC(end.getFullYear(), end.getMonth(), end.getDate()));
+    end = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), 
+      end.getUTCDate()));
     const start = new Date(end.getTime() - (7 * 24 * 3600000));
     this.reviewForm = this.fb.group({
       start: [start, [Validators.required]],

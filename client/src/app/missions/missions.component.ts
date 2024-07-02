@@ -12,11 +12,22 @@ import { MissionNewDialogComponent } from './mission-new-dialog/mission-new-dial
 import { SystemInfoResponse } from '../models/web/userWeb';
 import { AppStateService } from '../services/app-state.service';
 import { MissionDeleteDialogComponent } from './mission-delete-dialog/mission-delete-dialog.component';
+import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 
 @Component({
   selector: 'app-missions',
   templateUrl: './missions.component.html',
-  styleUrls: ['./missions.component.scss']
+  styleUrls: ['./missions.component.scss'],
+  providers: [
+    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true}},
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
+    },
+    {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
+  ]
 })
 export class MissionsComponent {
   mission?: Mission = undefined;
@@ -34,8 +45,11 @@ export class MissionsComponent {
     private dialog: MatDialog,
     private fb: FormBuilder
   ) {
+    let now = new Date();
+    now = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 
+      now.getUTCDate()));
     this.missionForm = this.fb.group({
-      msndate: [new Date(), [Validators.required]],
+      msndate: [now, [Validators.required]],
       platform: ['', [Validators.required ]],
       sortie: ['', [Validators.required, Validators.pattern("^[0-9]+$")]],
       exploitation: ['', [Validators.required]],
@@ -207,12 +221,21 @@ export class MissionsComponent {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result.toLowerCase() === 'yes') {
+      if (result.toLowerCase() === 'yes' && this.mission && this.mission.id) {
         this.dialogService.showSpinner();
-        this.msnService.deleteMission()
+        this.msnService.deleteMission(this.mission.id)
           .subscribe({
             next: (resp: MissionResponse) => {
               this.dialogService.closeSpinner();
+              let found = -1;
+              for (let i=0; i < this.sorties.length && found < 0; i++) {
+                if (`${this.mission?.sortieID}` === this.sorties[i]) {
+                  found = i;
+                }
+              }
+              if (found >= 0) {
+                this.sorties.splice(found, 1);
+              }
               this.mission = undefined;
               this.setMission();
             },
@@ -280,6 +303,7 @@ export class MissionsComponent {
             next: (data: MissionResponse) => {
               this.dialogService.closeSpinner();
               if (data && data !== null && data.mission) {
+                this.sorties.push(`${data.mission.sortieID}`);
                 this.mission = new Mission(data.mission);
                 this.setMission();
               } 

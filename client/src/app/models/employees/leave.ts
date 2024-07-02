@@ -84,17 +84,17 @@ export class LeaveRequestComment implements ILeaveRequestComment {
     return -1;
   }
 
-  getDate(): string {
+  getUTCDate(): string {
     const months: string[] = new Array("Jan", "Feb", "Mar",
       "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov",
       "Dec");
     let answer = '';
-    if (this.commentdate.getDate() < 9) {
+    if (this.commentdate.getUTCDate() < 9) {
       answer += "0";
     }
-    answer += `${this.commentdate.getDate()} ` 
-      + `${months[this.commentdate.getMonth()]} `
-      + `${this.commentdate.getFullYear()}`;
+    answer += `${this.commentdate.getUTCDate()} ` 
+      + `${months[this.commentdate.getUTCMonth()]} `
+      + `${this.commentdate.getUTCFullYear()}`;
     return answer;
   }
 }
@@ -214,14 +214,14 @@ export class LeaveGroup {
 
   getLastDate(): number {
     if (this.leaves.length > 0) {
-      return this.leaves[this.leaves.length - 1].leavedate.getDate();
+      return this.leaves[this.leaves.length - 1].leavedate.getUTCDate();
     }
     return 0;
   }
 
   getFirstDate(): number {
     if (this.leaves.length > 0) {
-      return this.leaves[0].leavedate.getDate();
+      return this.leaves[0].leavedate.getUTCDate();
     }
     return 0;
   }

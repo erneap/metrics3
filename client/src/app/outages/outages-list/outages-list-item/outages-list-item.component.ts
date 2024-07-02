@@ -90,13 +90,13 @@ export class OutagesListItemComponent {
       + `background-color: transparent;`;
   }
 
-  getDate(outageDate: Date): string {
+  getUTCDate(outageDate: Date): string {
     let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
       "Oct", "Nov", "Dec" ];
-    if (outageDate.getDate() < 10) {
-      return `0${outageDate.getDate()} ${months[outageDate.getMonth()]} ${outageDate.getFullYear()}`;
+    if (outageDate.getUTCDate() < 10) {
+      return `0${outageDate.getUTCDate()} ${months[outageDate.getUTCMonth()]} ${outageDate.getUTCFullYear()}`;
     } else {
-      return `${outageDate.getDate()} ${months[outageDate.getMonth()]} ${outageDate.getFullYear()}`;
+      return `${outageDate.getUTCDate()} ${months[outageDate.getUTCMonth()]} ${outageDate.getUTCFullYear()}`;
     }
   }
 }

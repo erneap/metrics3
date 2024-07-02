@@ -1,10 +1,10 @@
 {
-    "/api/v2/metrics/*": {
+    "/api/v2/metrics/**": {
         "target": "http://localhost:7010/",
         "secure": false,
         "logLevel": "debug"
     },
-    "/api/v2/authentication/*": {
+    "/api/v2/authentication/**": {
         "target": "http://localhost:7004/",
         "secure": false,
         "logLevel": "debug"
