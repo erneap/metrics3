@@ -37,7 +37,7 @@ export class MissionsComponent {
     this.missionForm = this.fb.group({
       msndate: [new Date(), [Validators.required]],
       platform: ['', [Validators.required ]],
-      sortie: ['new', [Validators.required, Validators.pattern("^[0-9]+$")]],
+      sortie: ['', [Validators.required, Validators.pattern("^[0-9]+$")]],
       exploitation: ['', [Validators.required]],
       tailnumber: '',
       communications: ['', [Validators.required]],
