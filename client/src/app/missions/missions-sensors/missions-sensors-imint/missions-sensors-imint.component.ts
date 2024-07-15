@@ -128,7 +128,7 @@ export class MissionsSensorsImintComponent extends Sensor {
       case "premission":
       case "scheduled":
       case "executed":
-      case "postmisison":
+      case "postmission":
       case "additional":
         value = String(this.convertTimeStringToMinutes(value));
         break;
