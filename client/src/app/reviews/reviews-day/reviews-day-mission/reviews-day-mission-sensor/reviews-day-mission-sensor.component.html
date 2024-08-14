@@ -20,6 +20,14 @@
   <div class="sensor" [style]="sensorStyle()">
     {{sensor.kitNumber}}
   </div>
+  <ng-container *ngIf="showOutages">
+    <div class="sensor" [style]="sensorStyle()">
+      {{sensorOutage}}
+    </div>
+    <div class="sensor" [style]="sensorStyle()">
+      {{sensor.groundOutage}}
+    </div>
+  </ng-container>
 </div> 
 <div class="flexlayout row center" *ngIf="sensor.sensorID === ''">
   <div class="sensor" [style]="sensorStyle()"></div>

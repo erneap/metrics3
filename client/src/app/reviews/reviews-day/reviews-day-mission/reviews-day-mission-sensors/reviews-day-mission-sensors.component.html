@@ -1,4 +1,4 @@
-<div class="flexlayout column center">
+<div class="flexlayout column topleft">
   <div class="flexlayout row center">
     <div class="sensor" [style]="sensorStyle()">SENSOR</div>
     <div class="sensor" [style]="sensorStyle()">PREMISSION</div>
@@ -7,7 +7,13 @@
     <div class="sensor" [style]="sensorStyle()">POSTMISSION</div>
     <div class="sensor" [style]="sensorStyle()">CODE</div>
     <div class="sensor" [style]="sensorStyle()">KIT NUMBER</div>
+    <ng-container *ngIf="sensorOutage > 0 || groundOutage > 0">
+      <div class="sensor" [style]="sensorStyle()">SEN OUTAGE</div>
+      <div class="sensor" [style]="sensorStyle()">GND OUTAGE</div>
+    </ng-container>
   </div>
   <app-reviews-day-mission-sensor *ngFor="let sen of sensors" 
-    [sensor]="sen" [width]="width"></app-reviews-day-mission-sensor>
+    [sensor]="sen" [width]="width"
+    [showOutages]="sensorOutage > 0 || groundOutage > 0"
+    ></app-reviews-day-mission-sensor>
 </div>

@@ -7,15 +7,25 @@ import { IMissionSensor, MissionSensor } from 'src/app/models/metrics/missionSen
   styleUrls: ['./reviews-day-mission-sensor.component.scss']
 })
 export class ReviewsDayMissionSensorComponent {
+  sensorOutage: number = 0;
   @Input() width: number = 700;
   private _sensor: MissionSensor = new MissionSensor();
   @Input()
   public set sensor(s: IMissionSensor) {
     this._sensor = new MissionSensor(s);
+    if (this._sensor.sensorOutage.partialHBOutageMinutes > 0 
+      || this._sensor.sensorOutage.partialLBOutageMinutes > 0) {
+      this.sensorOutage = this._sensor.sensorOutage.partialHBOutageMinutes
+        + this._sensor.sensorOutage.partialLBOutageMinutes;
+    } else {
+      this.sensorOutage = this._sensor.sensorOutage.totalOutageMinutes;
+    }
+    
   }
   get sensor(): MissionSensor {
     return this._sensor;
   }
+  @Input() showOutages: boolean = false;
 
   protected convertToHHMM(time?: number): string {
     let answer = '';
