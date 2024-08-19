@@ -4,11 +4,22 @@ import { ReportPeriod, ReportType, Reports } from '../models/metrics/systems';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { DialogService } from '../services/dialog-service.service';
+import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
-  styleUrl: './reports.component.scss'
+  styleUrl: './reports.component.scss',
+  providers: [
+    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true}},
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
+    },
+    {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
+  ]
 })
 export class ReportsComponent {
   reports: string[] = ["Msn Summary", "Draw", "XINT"];
@@ -38,6 +49,19 @@ export class ReportsComponent {
       || this.reportForm.value.period === 'Custom');
   }
 
+  createDate(dt: Date): string {
+    let answer = `${dt.getUTCFullYear()}|`;
+    if (dt.getUTCMonth() < 9) {
+      answer += '0';
+    }
+    answer += `${dt.getUTCMonth() + 1}|`;
+    if (dt.getUTCDate() < 10) {
+      answer += '0';
+    }
+    answer += `${dt.getUTCDate()}`;
+    return answer;
+  }
+
   createReport() {
     const url = '/api/v2/metrics/reports';
     const start = new Date(this.reportForm.value.startDate);
@@ -45,8 +69,7 @@ export class ReportsComponent {
       report: Reports.MSN_SUMMARY,
       reportPeriod: ReportPeriod.WEEKLY,
       reportType: ReportType.FULL_REPORT,
-      startDate: new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), 
-        start.getUTCDate())),
+      startDate: this.createDate(start),
       endDate: undefined,
       includeDaily: this.reportForm.value.daily,
     }
@@ -97,8 +120,7 @@ export class ReportsComponent {
     }
     if (request.reportPeriod === ReportPeriod.CUSTOM) {
       const end = new Date(this.reportForm.value.endDate);
-      request.endDate = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth(),
-        end.getUTCDate(), 23, 59, 59, 999));
+      request.endDate = this.createDate(end);
     }
     this.dialogService.showSpinner();
     this.httpClient.post(url, request, 

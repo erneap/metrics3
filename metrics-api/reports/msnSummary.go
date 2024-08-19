@@ -2,6 +2,7 @@ package reports
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"sort"
 	"strconv"
@@ -690,7 +691,8 @@ func (ms *MissionSummary) AddSummarySheet(workbook *excelize.File,
 }
 
 func (ms *MissionSummary) GetDateString(date time.Time) string {
-	return date.Format("01/02/2006")
+	fmt.Println(date.Local())
+	return date.Local().Format("01/02/2006")
 }
 
 func (ms *MissionSummary) GetTimeString(minutes uint) string {

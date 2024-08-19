@@ -39,7 +39,7 @@ export interface ReportRequest {
     report: string;
     reportType: string;
     reportPeriod: number;
-    startDate: Date;
-    endDate?: Date;
+    startDate: string;
+    endDate?: string;
     includeDaily: boolean
   }

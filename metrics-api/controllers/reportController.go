@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -34,14 +35,29 @@ func CreateReport(c *gin.Context) {
 	case "xint":
 		rptType = systemdata.XINT
 	}
+	start, err := time.ParseInLocation("2006|01|02", data.StartDate, time.UTC)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "Start Date Problem: "+err.Error())
+		fmt.Println(err)
+		return
+	}
+	var end time.Time
+	if data.EndDate != "" {
+		end, err = time.ParseInLocation("2006|01|02", data.EndDate, time.UTC)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, "End Date Problem: "+err.Error())
+			fmt.Println(err)
+			return
+		}
+	}
 
 	switch strings.ToLower(data.Report) {
 	case "mission summary":
 		msnsum := reports.MissionSummary{
 			ReportType:   rptType,
 			ReportPeriod: data.ReportPeriod,
-			StartDate:    data.StartDate,
-			EndDate:      data.EndDate,
+			StartDate:    start,
+			EndDate:      end,
 			Daily:        data.IncludeDaily,
 		}
 		workbook, err := msnsum.Create()
@@ -80,8 +96,8 @@ func CreateReport(c *gin.Context) {
 		draw := reports.DrawSummary{
 			ReportType:   rptType,
 			ReportPeriod: data.ReportPeriod,
-			StartDate:    data.StartDate,
-			EndDate:      data.EndDate,
+			StartDate:    start,
+			EndDate:      end,
 			Daily:        data.IncludeDaily,
 		}
 		workbook, err := draw.Create()
