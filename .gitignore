@@ -5,6 +5,5 @@ datatransfer/.env
 server/node_modules/**/*
 server/.env
 .DS_Store
-client/angular.json
 *.xlsx
 node_modules
