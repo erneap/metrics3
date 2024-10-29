@@ -32,6 +32,7 @@ import { AdminService } from './services/admin.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReportsModule } from './reports/reports.module';
+import { ReportArchiveModule } from './report-archive/report-archive.module';
 
 @NgModule({ declarations: [
         AppComponent,
@@ -67,6 +68,6 @@ import { ReportsModule } from './reports/reports.module';
         AdminModule,
         ReportsModule ], 
     providers: [AuthService, DialogService, interceptorProviders,
-        AppStateService, MissionService, AdminService,
+        AppStateService, MissionService, AdminService, ReportArchiveModule,
         provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }

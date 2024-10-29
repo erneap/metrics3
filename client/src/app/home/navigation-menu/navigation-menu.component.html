@@ -30,5 +30,5 @@
 <mat-nav-list class="bottom">
   <a mat-list-item routerLinkActive="active-link"
     *ngIf="this.authService.hasRole('ADMIN')"
-    (click)="getOldReports()">Report Archive</a>
+    routerLink="/archive">Report Archive</a>
 </mat-nav-list>

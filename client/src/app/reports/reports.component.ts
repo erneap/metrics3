@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ReportRequest } from '../models/web/missionsWeb';
+import { ReportRequest } from '../models/web/teamWeb';
 import { ReportPeriod, ReportType, Reports } from '../models/metrics/systems';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -63,62 +63,62 @@ export class ReportsComponent {
   }
 
   createReport() {
-    const url = '/api/v2/metrics/reports';
+    const url = '/api/v2/general/report';
     const start = new Date(this.reportForm.value.startDate);
     let request: ReportRequest = {
-      report: Reports.MSN_SUMMARY,
-      reportPeriod: ReportPeriod.WEEKLY,
-      reportType: ReportType.FULL_REPORT,
+      reportType: Reports.MSN_SUMMARY,
+      period: ReportPeriod.WEEKLY.toString(),
+      subreport: ReportType.FULL_REPORT,
       startDate: this.createDate(start),
       endDate: undefined,
       includeDaily: this.reportForm.value.daily,
     }
     switch (this.reportForm.value.report) {
       case "Msn Summary":
-        request.report = Reports.MSN_SUMMARY;
+        request.reportType = Reports.MSN_SUMMARY;
         break;
       case "Draw":
-        request.report = Reports.DRAW;
+        request.reportType = Reports.DRAW;
         break;
       case "XINT":
-        request.report = Reports.XINT;
+        request.reportType = Reports.XINT;
         break;
     }
     switch (this.reportForm.value.period) {
       case "Daily":
-        request.reportPeriod = ReportPeriod.DAILY;
+        request.period = ReportPeriod.DAILY.toString();
         break;
       case "Weekly":
-        request.reportPeriod = ReportPeriod.WEEKLY;
+        request.period = ReportPeriod.WEEKLY.toString();
         break;
       case "Monthly":
-        request.reportPeriod = ReportPeriod.MONTHLY;
+        request.period = ReportPeriod.MONTHLY.toString();
         break;
       case "Annual":
-        request.reportPeriod = ReportPeriod.ANNUAL;
+        request.period = ReportPeriod.ANNUAL.toString();
         break;
       case "Custom":
-        request.reportPeriod = ReportPeriod.CUSTOM;
+        request.period = ReportPeriod.CUSTOM.toString();
         break;
     }
     switch (this.reportForm.value.limits) {
       case "Full Report":
-        request.reportType = ReportType.FULL_REPORT;
+        request.subreport = ReportType.FULL_REPORT;
         break;
       case "GEOINT Only":
-        request.reportType = ReportType.GEOINT_ONLY;
+        request.subreport = ReportType.GEOINT_ONLY;
         break;
       case "SYERS Only":
-        request.reportType = ReportType.SYERS_ONLY;
+        request.subreport = ReportType.SYERS_ONLY;
         break;
       case "DDSA Only":
-        request.reportType = ReportType.MIST_ONLY;
+        request.subreport = ReportType.MIST_ONLY;
         break;
       case "XINT Only":
-        request.reportType = ReportType.XINT_ONLY;
+        request.subreport = ReportType.XINT_ONLY;
         break;
     }
-    if (request.reportPeriod === ReportPeriod.CUSTOM) {
+    if (request.period === ReportPeriod.CUSTOM.toString()) {
       const end = new Date(this.reportForm.value.endDate);
       request.endDate = this.createDate(end);
     }

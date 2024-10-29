@@ -52,10 +52,13 @@ export interface ReportRequest {
   reportType: string;
   period?: string;
   subreport?: string;
-  teamid: string;
-  siteid: string;
+  teamid?: string;
+  siteid?: string;
   companyid?: string;
   password?: string;
+  startDate?: string;
+  endDate?: string;
+  includeDaily?: boolean;
 }
 
 export interface AddTypeRequest {

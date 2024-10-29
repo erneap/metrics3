@@ -10,6 +10,7 @@ import { ProfileComponent } from './home/profile/profile.component';
 import { OutagesComponent } from './outages/outages.component';
 import { AdminComponent } from './admin/admin.component';
 import { ReportsComponent } from './reports/reports.component';
+import { ReportArchiveComponent } from './report-archive/report-archive.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: 'review', component: ReviewsComponent },
   { path: 'reset/start', component: ForgotPasswordComponent },
   { path: 'reset/finish', component: ForgotPasswordResetComponent },
+  { path: 'archive', component: ReportArchiveComponent },
   { path: '**', component: NotFoundComponent}
 ];
 
