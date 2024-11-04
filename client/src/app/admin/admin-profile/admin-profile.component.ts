@@ -6,7 +6,7 @@ import { IUser, User } from 'src/app/models/users/user';
 import { MustMatchValidator } from 'src/app/models/validators/must-match-validator.directive';
 import { PasswordStrengthValidator } from 'src/app/models/validators/password-strength-validator.directive';
 import { UsedEmailValidator } from 'src/app/models/validators/used-email-validator.directive';
-import { AuthenticationResponse } from 'src/app/models/web/employeeWeb';
+import { AuthenticationResponse, EmployeeResponse } from 'src/app/models/web/employeeWeb';
 import { UserResponse, UsersResponse } from 'src/app/models/web/userWeb';
 import { AuthService } from 'src/app/services/auth.service';
 import { DialogService } from 'src/app/services/dialog-service.service';
@@ -29,6 +29,8 @@ export class AdminProfileComponent {
   @Input() width: number = 800;
   @Output() changed = new EventEmitter<User>();
   profileForm: FormGroup;
+  passwordError: boolean = false;
+  verifyError: boolean = false;
 
   constructor(
     protected authService: AuthService,
@@ -71,31 +73,64 @@ export class AdminProfileComponent {
   }
 
   getPasswordError(): string {
+    this.passwordError = false
     let answer: string = ''
     if (this.profileForm.get('password')?.hasError('required')) {
       answer = "Required";
+      this.passwordError = true;
     }
     if (this.profileForm.get('password')?.hasError('passwordStrength')) {
       if (answer !== '') {
         answer += ', ';
       }
       answer += "Minimum(s)";
+      this.passwordError = true;
     }
     return answer;
   }
 
   getVerifyError(): string {
+    this.verifyError = false;
     let answer: string = ''
     if (this.profileForm.get('password2')?.hasError('required')) {
       answer = "Required";
+      this.verifyError= true;
     }
     if (this.profileForm.get('password2')?.hasError('matching')) {
       if (answer !== '') {
         answer += ', ';
       }
       answer += "Doesn't match";
+      this.verifyError = true;
     }
     return answer;
+  }
+
+  setPassword() {
+
+    if (!this.passwordError && !this.verifyError) {
+      const id = this.profileForm.value.id;    
+      const passwd = this.profileForm.value.password;
+      this.dialogService.showSpinner();
+      this.authService.statusMessage = "Updating User Password";
+      this.authService.changePassword(id, passwd)
+        .subscribe({
+          next: (data: EmployeeResponse) => {
+            this.dialogService.closeSpinner();
+            if (data && data !== null) {
+              if (data.exception === '') {
+                this.profileForm.controls['password'].setValue(undefined);
+                this.profileForm.controls['password2'].setValue(undefined);
+              }
+            }
+            this.authService.statusMessage = "Update complete";
+          },
+          error: (error: EmployeeResponse) => {
+            this.dialogService.closeSpinner();
+            this.authService.statusMessage = error.exception;
+          }
+        });
+    }
   }
 
   onAdd() {

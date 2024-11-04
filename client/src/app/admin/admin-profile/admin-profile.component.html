@@ -68,7 +68,8 @@
     </mat-form-field>
     <div class="flexlayout row center"
       *ngIf="user.id !== 'new' && user.id !== '' && getPasswordError() === '' && getVerifyError() === ''">
-      <button mat-raised-button color="warn">Change</button>
+      <button mat-raised-button color="warn"
+      (click)="setPassword()">Change</button>
     </div>
   </div>
   <div class="flexlayout row center">
