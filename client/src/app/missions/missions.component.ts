@@ -125,6 +125,7 @@ export class MissionsComponent {
       this.missionForm.controls["isExecuted"].enable();
       this.missionForm.controls["imintsensor"].setValue(
         this.showMissionSensor());
+      this.missionForm.controls["imintsensor"].enable();
     } else {
       this.missionForm.controls["sortie"].setValue('');
       this.missionForm.controls["exploitation"].setValue('');
