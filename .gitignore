@@ -7,3 +7,5 @@ server/.env
 .DS_Store
 *.xlsx
 node_modules
+out/linecounter.txt
+out/linecounter.json
