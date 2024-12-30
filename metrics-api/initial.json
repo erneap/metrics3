@@ -111,6 +111,15 @@
       "exploitations": []
     },
     {
+      "id": "APS+",
+      "enclaves": [ "LOW" ],
+      "showOnGEOINT": true,
+      "showOnGSEG": false,
+      "showOnMIST": false,
+      "showOnXINT": false,
+      "exploitations": []
+    },
+    {
       "id": "CREWCOMM",
       "enclaves": [ "S-REL","LOW","S-REL-HI", "HIGH" ],
       "showOnGEOINT": true,
