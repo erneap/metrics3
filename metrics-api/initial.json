@@ -117,7 +117,20 @@
       "showOnGSEG": false,
       "showOnMIST": false,
       "showOnXINT": false,
-      "exploitations": []
+      "exploitations": [
+        {
+          "platformID": "U2",
+          "sensorType": "PME3",
+          "exploitation": "Primary",
+          "communicationID": "LOS"
+        },
+        {
+          "platformID": "U2",
+          "sensorType": "PME3",
+          "exploitation": "Primary",
+          "communicationID": "Non-LOS"
+        }
+      ]
     },
     {
       "id": "CREWCOMM",
