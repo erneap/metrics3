@@ -5,7 +5,7 @@ go 1.22.0
 toolchain go1.23.0
 
 require (
-	github.com/erneap/models/v2 v2.0.0-alpha.6
+	github.com/erneap/models/v2 v2.0.7
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/xuri/excelize/v2 v2.8.1
