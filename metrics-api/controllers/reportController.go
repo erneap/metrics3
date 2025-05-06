@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	systemdata "github.com/erneap/metrics3/metrics-api/models/systemData"
 	"github.com/erneap/metrics3/metrics-api/models/web"
 	"github.com/erneap/metrics3/metrics-api/reports"
+	"github.com/erneap/models/v2/systemdata"
 	"github.com/gin-gonic/gin"
 )
 

@@ -28,6 +28,7 @@ export class MissionsSensorsImintComponent extends Sensor {
   @Output() changed = new EventEmitter<Mission>();
   geoint: MissionSensor = new MissionSensor();
   geointForm: FormGroup;
+  showAps: boolean = true;
 
   finalCodes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -52,19 +53,22 @@ export class MissionsSensorsImintComponent extends Sensor {
       tower: 0,
       sensorout: 0,
       groundout: 0,
+      aps: true,
+      apsplus: true,
     });
   }
 
   missionSensor() {
     this.geoint = new MissionSensor();
-    if (this.mission && this.mission.missionData 
-      && this.mission.missionData.sensors) {
-      this.mission.missionData.sensors.forEach(sen => {
+    if (this.mission && this.mission 
+      && this.mission.sensors) {
+      this.mission.sensors.forEach(sen => {
         if (sen.sensorType && sen.sensorType === GeneralSensorType.GEOINT) {
           this.geoint = new MissionSensor(sen);
         }
       });
     }
+    this.showAps = (this.geoint.sensorID.toLowerCase() === "pme3");
     this.setSensor();
   }
 
@@ -114,6 +118,8 @@ export class MissionsSensorsImintComponent extends Sensor {
     this.geointForm.controls['hashap'].setValue(this.geoint.hasHap);
     this.geointForm.controls['tower'].setValue(this.geoint.towerID);
     this.geointForm.controls['comments'].setValue(this.geoint.comments);
+    this.geointForm.controls['aps'].setValue(this.geoint.equipmentInUse("aps"));
+    this.geointForm.controls['apsplus'].setValue(this.geoint.equipmentInUse("aps+"));
   }
 
   UpdateSensor(field: string) {
@@ -133,6 +139,8 @@ export class MissionsSensorsImintComponent extends Sensor {
         value = String(this.convertTimeStringToMinutes(value));
         break;
       case "hashap":
+      case "aps":
+      case "apsplus":
         value = `${value}`;
         break;
     }

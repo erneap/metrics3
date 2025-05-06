@@ -24,10 +24,10 @@ export class MissionsSensorsComponent {
         if (plat.id.toLowerCase() === this.mission.platformID.toLowerCase()) {
           plat.sensors.forEach(pSen => {
             pSen.exploitations.forEach(pSenExp => {
-              if (this.mission && this.mission.missionData 
-                && this.mission.missionData.exploitation 
+              if (this.mission && this.mission 
+                && this.mission.exploitation 
                 && pSenExp.exploitation.toLowerCase().indexOf(
-                this.mission.missionData.exploitation.toLowerCase()) >= 0) {
+                this.mission.exploitation.toLowerCase()) >= 0) {
                 switch (tabName.toLowerCase()) {
                   case "geoint":
                     if (pSenExp.showOnGEOINT || pSenExp.showOnGSEG) {
@@ -57,9 +57,9 @@ export class MissionsSensorsComponent {
   }
 
   show(): boolean {
-    return (this.mission !== undefined && this.mission.missionData !== undefined
-      && this.mission.missionData.sensors !== undefined
-      && this.mission.missionData.sensors.length > 0);
+    return (this.mission !== undefined && this.mission !== undefined
+      && this.mission.sensors !== undefined
+      && this.mission.sensors.length > 0);
   }
 
   onChange(msn: Mission) {

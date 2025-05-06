@@ -70,6 +70,18 @@
         <mat-hint>(In Minutes)</mat-hint>
       </mat-form-field>
     </div>
+    <ng-container *ngIf="showAps">
+      <div class="flexlayout row center">
+        <div class="flexlayout row center"
+          style="background-color: white;padding: 5px;">
+          <h5 style="color: black;">Control Application(s):</h5>
+          <mat-checkbox formControlName="aps" 
+            (change)="UpdateSensor('aps')"> APS </mat-checkbox>
+          <mat-checkbox formControlName="apsplus"
+            (change)="UpdateSensor('apsplus')"> APS+ </mat-checkbox>
+        </div>
+      </div>
+    </ng-container>
     <div class="flexlayout row center" [style]="commentsStyle()">
       <mat-form-field appearance="fill" style="width: 100%;">
         <mat-label>Sensor Comments</mat-label>

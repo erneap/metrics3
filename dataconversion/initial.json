@@ -109,60 +109,7 @@
       "showOnMIST": false,
       "showOnXINT": false,
       "checkForUse": true,
-      "exploitations": [
-        {
-          "platformID": "U2",
-          "sensorType": "PME3",
-          "exploitation": "Primary",
-          "communicationID": "LOS"
-        },
-        {
-          "platformID": "U2",
-          "sensorType": "PME3",
-          "exploitation": "Primary",
-          "communicationID": "Non-LOS"
-        },
-        {
-          "platformID": "GH",
-          "sensorType": "IMINT",
-          "exploitation": "Primary",
-          "communicationID": "LOS",
-          "enclaves": [ "LOW", "HIGH"]
-        },
-        {
-          "platformID": "U2",
-          "sensorType": "PME3",
-          "exploitation": "Primary",
-          "communicationID": "Non-LOS",
-          "enclaves": [ "LOW", "HIGH"]
-        },
-        {
-          "platformID": "U2",
-          "sensorType": "PME3",
-          "exploitation": "Shadow",
-          "communicationID": "LOS"
-        },
-        {
-          "platformID": "U2",
-          "sensorType": "PME3",
-          "exploitation": "Shadow",
-          "communicationID": "Non-LOS"
-        },
-        {
-          "platformID": "GH",
-          "sensorType": "IMINT",
-          "exploitation": "Shadow",
-          "communicationID": "LOS",
-          "enclaves": [ "LOW", "HIGH"]
-        },
-        {
-          "platformID": "U2",
-          "sensorType": "PME3",
-          "exploitation": "Shadow",
-          "communicationID": "Non-LOS",
-          "enclaves": [ "LOW", "HIGH"]
-        }
-      ]
+      "exploitations": []
     },
     {
       "id": "APS+",

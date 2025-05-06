@@ -4,13 +4,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/erneap/metrics3/metrics-api/models/interfaces"
-	systemdata "github.com/erneap/metrics3/metrics-api/models/systemData"
+	"github.com/erneap/models/v2/metrics"
+	"github.com/erneap/models/v2/systemdata"
 )
 
 type MissionDay struct {
 	MissionDate time.Time
-	Missions    []interfaces.Mission
+	Missions    []metrics.Mission
 }
 
 type ByMissionDay []MissionDay
@@ -24,7 +24,7 @@ func (c ByMissionDay) Swap(i, j int) { c[i], c[j] = c[j], c[i] }
 type MissionType struct {
 	Exploitation string
 	Platform     string
-	Missions     []interfaces.Mission
+	Missions     []metrics.Mission
 }
 
 func (mt *MissionType) GetScheduled(exploit string, sens []string) int {
@@ -38,8 +38,8 @@ func (mt *MissionType) GetScheduled(exploit string, sens []string) int {
 		} else {
 			for _, msn := range mt.Missions {
 				found := false
-				msn.Decrypt()
-				for _, sen := range msn.MissionData.Sensors {
+				//msn.Decrypt()
+				for _, sen := range msn.Sensors {
 					for _, lsen := range sens {
 						if strings.EqualFold(sen.SensorID, lsen) {
 							if !found {
@@ -63,19 +63,19 @@ func (mt *MissionType) GetExecuted(exploit string, sens []string) int {
 			strings.ToLower(mt.Exploitation) != "primary") {
 		if len(sens) == 0 {
 			for _, msn := range mt.Missions {
-				msn.Decrypt()
-				if !msn.MissionData.Aborted && !msn.MissionData.Cancelled &&
-					!msn.MissionData.IndefDelay {
+				//msn.Decrypt()
+				if !msn.Aborted && !msn.Cancelled &&
+					!msn.IndefDelay {
 					answer++
 				}
 			}
 		} else {
 			for _, msn := range mt.Missions {
 				found := false
-				msn.Decrypt()
-				if !msn.MissionData.Aborted && !msn.MissionData.Cancelled &&
-					!msn.MissionData.IndefDelay {
-					for _, sen := range msn.MissionData.Sensors {
+				//msn.Decrypt()
+				if !msn.Aborted && !msn.Cancelled &&
+					!msn.IndefDelay {
+					for _, sen := range msn.Sensors {
 						for _, lsen := range sens {
 							if strings.EqualFold(sen.SensorID, lsen) {
 								if !found {
@@ -100,17 +100,17 @@ func (mt *MissionType) GetCancelled(exploit string, sens []string) int {
 			strings.ToLower(mt.Exploitation) != "primary") {
 		if len(sens) == 0 {
 			for _, msn := range mt.Missions {
-				msn.Decrypt()
-				if msn.MissionData.Cancelled || msn.MissionData.IndefDelay {
+				//msn.Decrypt()
+				if msn.Cancelled || msn.IndefDelay {
 					answer++
 				}
 			}
 		} else {
 			for _, msn := range mt.Missions {
 				found := false
-				msn.Decrypt()
-				if msn.MissionData.Cancelled || msn.MissionData.IndefDelay {
-					for _, sen := range msn.MissionData.Sensors {
+				//msn.Decrypt()
+				if msn.Cancelled || msn.IndefDelay {
+					for _, sen := range msn.Sensors {
 						for _, lsen := range sens {
 							if strings.EqualFold(sen.SensorID, lsen) {
 								if !found {
@@ -135,17 +135,17 @@ func (mt *MissionType) GetAborted(exploit string, sens []string) int {
 			strings.ToLower(mt.Exploitation) != "primary") {
 		if len(sens) == 0 {
 			for _, msn := range mt.Missions {
-				msn.Decrypt()
-				if msn.MissionData.Aborted {
+				//msn.Decrypt()
+				if msn.Aborted {
 					answer++
 				}
 			}
 		} else {
 			for _, msn := range mt.Missions {
 				found := false
-				msn.Decrypt()
-				if msn.MissionData.Aborted {
-					for _, sen := range msn.MissionData.Sensors {
+				//msn.Decrypt()
+				if msn.Aborted {
+					for _, sen := range msn.Sensors {
 						for _, lsen := range sens {
 							if strings.EqualFold(sen.SensorID, lsen) {
 								if !found {
@@ -167,9 +167,9 @@ func (mt *MissionType) GetPremissionTime(sens []string,
 	answer := uint(0)
 	for _, msn := range mt.Missions {
 		senMax := uint(0)
-		msn.Decrypt()
-		msnExp := strings.ToLower(msn.MissionData.Exploitation)
-		msnComm := strings.ToLower(msn.MissionData.Communications)
+		//msn.Decrypt()
+		msnExp := strings.ToLower(msn.Exploitation)
+		msnComm := strings.ToLower(msn.Communications)
 		if gs != nil {
 			for _, exp := range gs.Exploitations {
 				gsExp := strings.ToLower(exp.Exploitation)
@@ -177,7 +177,7 @@ func (mt *MissionType) GetPremissionTime(sens []string,
 				if strings.EqualFold(msn.PlatformID, exp.PlatformID) &&
 					strings.Contains(gsExp, msnExp) &&
 					strings.Contains(gsComm, msnComm) {
-					for _, mSen := range msn.MissionData.Sensors {
+					for _, mSen := range msn.Sensors {
 						if strings.EqualFold(exp.SensorType, mSen.SensorID) &&
 							senMax < mSen.PreflightMinutes {
 							senMax = mSen.PreflightMinutes
@@ -186,7 +186,7 @@ func (mt *MissionType) GetPremissionTime(sens []string,
 				}
 			}
 		} else {
-			for _, sen := range msn.MissionData.Sensors {
+			for _, sen := range msn.Sensors {
 				for _, lsen := range sens {
 					if strings.EqualFold(sen.SensorID, lsen) &&
 						senMax < sen.PreflightMinutes {
@@ -205,9 +205,9 @@ func (mt *MissionType) GetPostmissionTime(sens []string,
 	answer := uint(0)
 	for _, msn := range mt.Missions {
 		senMax := uint(0)
-		msn.Decrypt()
-		msnExp := strings.ToLower(msn.MissionData.Exploitation)
-		msnComm := strings.ToLower(msn.MissionData.Communications)
+		//msn.Decrypt()
+		msnExp := strings.ToLower(msn.Exploitation)
+		msnComm := strings.ToLower(msn.Communications)
 		if gs != nil {
 			for _, exp := range gs.Exploitations {
 				gsExp := strings.ToLower(exp.Exploitation)
@@ -215,7 +215,7 @@ func (mt *MissionType) GetPostmissionTime(sens []string,
 				if strings.EqualFold(msn.PlatformID, exp.PlatformID) &&
 					strings.Contains(gsExp, msnExp) &&
 					strings.Contains(gsComm, msnComm) {
-					for _, mSen := range msn.MissionData.Sensors {
+					for _, mSen := range msn.Sensors {
 						if strings.EqualFold(exp.SensorType, mSen.SensorID) &&
 							senMax < mSen.PostflightMinutes {
 							senMax = mSen.PostflightMinutes
@@ -224,7 +224,7 @@ func (mt *MissionType) GetPostmissionTime(sens []string,
 				}
 			}
 		} else {
-			for _, sen := range msn.MissionData.Sensors {
+			for _, sen := range msn.Sensors {
 				for _, lsen := range sens {
 					if strings.EqualFold(sen.SensorID, lsen) &&
 						senMax < sen.PostflightMinutes {
@@ -243,9 +243,9 @@ func (mt *MissionType) GetScheduledTime(sens []string,
 	answer := uint(0)
 	for _, msn := range mt.Missions {
 		senMax := uint(0)
-		msn.Decrypt()
-		msnExp := strings.ToLower(msn.MissionData.Exploitation)
-		msnComm := strings.ToLower(msn.MissionData.Communications)
+		//msn.Decrypt()
+		msnExp := strings.ToLower(msn.Exploitation)
+		msnComm := strings.ToLower(msn.Communications)
 		if gs != nil {
 			for _, exp := range gs.Exploitations {
 				gsExp := strings.ToLower(exp.Exploitation)
@@ -253,7 +253,7 @@ func (mt *MissionType) GetScheduledTime(sens []string,
 				if strings.EqualFold(msn.PlatformID, exp.PlatformID) &&
 					strings.Contains(gsExp, msnExp) &&
 					strings.Contains(gsComm, msnComm) {
-					for _, mSen := range msn.MissionData.Sensors {
+					for _, mSen := range msn.Sensors {
 						if strings.EqualFold(exp.SensorType, mSen.SensorID) &&
 							senMax < mSen.ScheduledMinutes {
 							senMax = mSen.ScheduledMinutes
@@ -262,7 +262,7 @@ func (mt *MissionType) GetScheduledTime(sens []string,
 				}
 			}
 		} else {
-			for _, sen := range msn.MissionData.Sensors {
+			for _, sen := range msn.Sensors {
 				for _, lsen := range sens {
 					if strings.EqualFold(sen.SensorID, lsen) &&
 						senMax < sen.ScheduledMinutes {
@@ -281,9 +281,9 @@ func (mt *MissionType) GetExecutedTime(sens []string,
 	answer := uint(0)
 	for _, msn := range mt.Missions {
 		senMax := uint(0)
-		msn.Decrypt()
-		msnExp := strings.ToLower(msn.MissionData.Exploitation)
-		msnComm := strings.ToLower(msn.MissionData.Communications)
+		//msn.Decrypt()
+		msnExp := strings.ToLower(msn.Exploitation)
+		msnComm := strings.ToLower(msn.Communications)
 		if gs != nil {
 			for _, exp := range gs.Exploitations {
 				gsExp := strings.ToLower(exp.Exploitation)
@@ -291,7 +291,7 @@ func (mt *MissionType) GetExecutedTime(sens []string,
 				if strings.EqualFold(msn.PlatformID, exp.PlatformID) &&
 					strings.Contains(gsExp, msnExp) &&
 					strings.Contains(gsComm, msnComm) {
-					for _, mSen := range msn.MissionData.Sensors {
+					for _, mSen := range msn.Sensors {
 						if strings.EqualFold(exp.SensorType, mSen.SensorID) &&
 							senMax < mSen.ExecutedMinutes {
 							senMax = mSen.ExecutedMinutes
@@ -300,7 +300,7 @@ func (mt *MissionType) GetExecutedTime(sens []string,
 				}
 			}
 		} else {
-			for _, sen := range msn.MissionData.Sensors {
+			for _, sen := range msn.Sensors {
 				for _, lsen := range sens {
 					if strings.EqualFold(sen.SensorID, lsen) &&
 						senMax < sen.ExecutedMinutes {
@@ -319,9 +319,9 @@ func (mt *MissionType) GetAdditional(sens []string,
 	answer := uint(0)
 	for _, msn := range mt.Missions {
 		senMax := uint(0)
-		msn.Decrypt()
-		msnExp := strings.ToLower(msn.MissionData.Exploitation)
-		msnComm := strings.ToLower(msn.MissionData.Communications)
+		//msn.Decrypt()
+		msnExp := strings.ToLower(msn.Exploitation)
+		msnComm := strings.ToLower(msn.Communications)
 		if gs != nil {
 			for _, exp := range gs.Exploitations {
 				gsExp := strings.ToLower(exp.Exploitation)
@@ -329,7 +329,7 @@ func (mt *MissionType) GetAdditional(sens []string,
 				if strings.EqualFold(msn.PlatformID, exp.PlatformID) &&
 					strings.Contains(gsExp, msnExp) &&
 					strings.Contains(gsComm, msnComm) {
-					for _, mSen := range msn.MissionData.Sensors {
+					for _, mSen := range msn.Sensors {
 						if strings.EqualFold(exp.SensorType, mSen.SensorID) &&
 							senMax < mSen.AdditionalMinutes {
 							senMax = mSen.AdditionalMinutes
@@ -338,7 +338,7 @@ func (mt *MissionType) GetAdditional(sens []string,
 				}
 			}
 		} else {
-			for _, sen := range msn.MissionData.Sensors {
+			for _, sen := range msn.Sensors {
 				for _, lsen := range sens {
 					if strings.EqualFold(sen.SensorID, lsen) &&
 						senMax < sen.AdditionalMinutes {
@@ -355,8 +355,8 @@ func (mt *MissionType) GetAdditional(sens []string,
 func (mt *MissionType) GetOverlap() uint {
 	answer := uint(0)
 	for _, msn := range mt.Missions {
-		msn.Decrypt()
-		answer += msn.MissionData.MissionOverlap
+		//msn.Decrypt()
+		answer += msn.MissionOverlap
 	}
 	return answer
 }
@@ -364,8 +364,8 @@ func (mt *MissionType) GetOverlap() uint {
 func (mt *MissionType) GetSensorList() []string {
 	var answer []string
 	for _, msn := range mt.Missions {
-		msn.Decrypt()
-		for _, sen := range msn.MissionData.Sensors {
+		//msn.Decrypt()
+		for _, sen := range msn.Sensors {
 			found := false
 			for _, s := range answer {
 				if strings.EqualFold(sen.SensorID, s) {
@@ -382,5 +382,5 @@ func (mt *MissionType) GetSensorList() []string {
 
 type OutageDay struct {
 	OutageDate time.Time
-	Outages    []interfaces.GroundOutage
+	Outages    []metrics.GroundOutage
 }

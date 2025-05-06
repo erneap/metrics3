@@ -7,18 +7,18 @@ import (
 	"strings"
 	"time"
 
-	"github.com/erneap/go-models/config"
-	"github.com/erneap/metrics3/metrics-api/models/interfaces"
 	"github.com/erneap/metrics3/metrics-api/models/web"
+	"github.com/erneap/models/v2/config"
+	"github.com/erneap/models/v2/metrics"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func GetAllOutages(c *gin.Context) {
-	var toutages []interfaces.GroundOutage
+	var toutages []metrics.GroundOutage
 
-	cursor, err := config.GetCollection(config.DB, "metrics", "groundoutages").Find(context.TODO(),
+	cursor, err := config.GetCollection(config.DB, "metrics2", "outages").Find(context.TODO(),
 		bson.M{})
 	if err != nil {
 		c.JSON(http.StatusBadRequest, web.OutagesResponse{Exception: err.Error()})
@@ -30,9 +30,9 @@ func GetAllOutages(c *gin.Context) {
 		return
 	}
 
-	var outages []interfaces.GroundOutage
+	var outages []metrics.GroundOutage
 	for _, outage := range toutages {
-		outage.Decrypt()
+		//outage.Decrypt()
 		outages = append(outages, outage)
 	}
 
@@ -51,8 +51,8 @@ func GetAllOutagesByDate(c *gin.Context) {
 
 	filter := bson.M{"outageDate": bson.M{"$gte": startDate, "$lt": endDate}}
 
-	var tOutages, outages []interfaces.GroundOutage
-	cursor, err := config.GetCollection(config.DB, "metrics", "groundoutages").Find(context.TODO(),
+	var tOutages, outages []metrics.GroundOutage
+	cursor, err := config.GetCollection(config.DB, "metrics2", "outages").Find(context.TODO(),
 		filter)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, web.OutagesResponse{Exception: err.Error()})
@@ -65,7 +65,7 @@ func GetAllOutagesByDate(c *gin.Context) {
 	}
 
 	for _, outage := range tOutages {
-		outage.Decrypt()
+		//outage.Decrypt()
 		outages = append(outages, outage)
 	}
 
@@ -84,8 +84,8 @@ func GetAllOutagesByWeek(c *gin.Context) {
 
 	filter := bson.M{"outageDate": bson.M{"$gte": startDate, "$lt": endDate}}
 
-	var tOutages, outages []interfaces.GroundOutage
-	cursor, err := config.GetCollection(config.DB, "metrics", "groundoutages").Find(context.TODO(),
+	var tOutages, outages []metrics.GroundOutage
+	cursor, err := config.GetCollection(config.DB, "metrics2", "outages").Find(context.TODO(),
 		filter)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, web.OutagesResponse{Exception: err.Error()})
@@ -98,7 +98,7 @@ func GetAllOutagesByWeek(c *gin.Context) {
 	}
 
 	for _, outage := range tOutages {
-		outage.Decrypt()
+		//outage.Decrypt()
 		outages = append(outages, outage)
 	}
 
@@ -123,8 +123,8 @@ func GetAllOutagesByPeriod(c *gin.Context) {
 
 	filter := bson.M{"outageDate": bson.M{"$gte": startDate, "$lte": endDate}}
 
-	var tOutages, outages []interfaces.GroundOutage
-	cursor, err := config.GetCollection(config.DB, "metrics", "groundoutages").Find(context.TODO(),
+	var tOutages, outages []metrics.GroundOutage
+	cursor, err := config.GetCollection(config.DB, "metrics2", "outages").Find(context.TODO(),
 		filter)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, web.OutagesResponse{Exception: err.Error()})
@@ -137,11 +137,11 @@ func GetAllOutagesByPeriod(c *gin.Context) {
 	}
 
 	for _, outage := range tOutages {
-		outage.Decrypt()
+		//outage.Decrypt()
 		outages = append(outages, outage)
 	}
 
-	sort.Sort(interfaces.ByOutage(outages))
+	sort.Sort(metrics.ByOutage(outages))
 
 	c.JSON(http.StatusOK, web.OutagesResponse{Outages: outages})
 }
@@ -151,8 +151,8 @@ func GetAllOutagesBySystem(c *gin.Context) {
 
 	filter := bson.M{"groundSystem": system}
 
-	var tOutages, outages []interfaces.GroundOutage
-	cursor, err := config.GetCollection(config.DB, "metrics", "groundoutages").Find(context.TODO(),
+	var tOutages, outages []metrics.GroundOutage
+	cursor, err := config.GetCollection(config.DB, "metrics2", "outages").Find(context.TODO(),
 		filter)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, web.OutagesResponse{Exception: err.Error()})
@@ -165,7 +165,7 @@ func GetAllOutagesBySystem(c *gin.Context) {
 	}
 
 	for _, outage := range tOutages {
-		outage.Decrypt()
+		//outage.Decrypt()
 		outages = append(outages, outage)
 	}
 
@@ -182,21 +182,21 @@ func GetOutage(c *gin.Context) {
 
 	filter := bson.M{"_id": oId}
 
-	var outage interfaces.GroundOutage
-	err = config.GetCollection(config.DB, "metrics", "groundoutages").FindOne(context.TODO(),
+	var outage metrics.GroundOutage
+	err = config.GetCollection(config.DB, "metrics2", "outages").FindOne(context.TODO(),
 		filter).Decode(&outage)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, web.OutageResponse{Exception: err.Error()})
 		return
 	}
-	outage.Decrypt()
+	//outage.Decrypt()
 
 	c.JSON(http.StatusOK, web.OutageResponse{Outage: outage})
 }
 
 func CreateOutage(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	var data interfaces.GroundOutage
+	var data metrics.GroundOutage
 	defer cancel()
 
 	if err := c.ShouldBindJSON(&data); err != nil {
@@ -205,9 +205,9 @@ func CreateOutage(c *gin.Context) {
 		return
 	}
 	data.ID = primitive.NewObjectID()
-	data.Encrypt()
+	//data.Encrypt()
 
-	_, err := config.GetCollection(config.DB, "metrics", "groundoutages").InsertOne(ctx, data)
+	_, err := config.GetCollection(config.DB, "metrics2", "outages").InsertOne(ctx, data)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, web.OutageResponse{Exception: err.Error()})
 		return
@@ -234,15 +234,15 @@ func UpdateOutage(c *gin.Context) {
 	}
 
 	filter := bson.M{"_id": oId}
-	var outage interfaces.GroundOutage
-	err = config.GetCollection(config.DB, "metrics", "groundoutages").FindOne(ctx, filter).
+	var outage metrics.GroundOutage
+	err = config.GetCollection(config.DB, "metrics2", "outages").FindOne(ctx, filter).
 		Decode(&outage)
 	if err != nil {
 		c.JSON(http.StatusBadRequest,
 			web.OutageResponse{Exception: "Database Problem: " + err.Error()})
 		return
 	}
-	outage.Decrypt()
+	//outage.Decrypt()
 
 	switch strings.ToLower(data.Field) {
 	case "date", "outagedate":
@@ -274,9 +274,9 @@ func UpdateOutage(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, web.OutageResponse{Exception: "Unknown Field"})
 		return
 	}
-	outage.Encrypt()
+	//outage.Encrypt()
 
-	_, err = config.GetCollection(config.DB, "metrics", "groundoutages").ReplaceOne(ctx,
+	_, err = config.GetCollection(config.DB, "metrics2", "outages").ReplaceOne(ctx,
 		filter, outage)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, web.OutageResponse{Exception: err.Error()})
@@ -296,7 +296,7 @@ func DeleteOutage(c *gin.Context) {
 
 	filter := bson.M{"_id": oId}
 
-	_, err = config.GetCollection(config.DB, "metrics", "groundoutages").DeleteOne(
+	_, err = config.GetCollection(config.DB, "metrics2", "outages").DeleteOne(
 		context.TODO(), filter)
 	if err != nil {
 		c.JSON(http.StatusBadRequest,

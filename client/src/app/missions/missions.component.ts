@@ -90,36 +90,36 @@ export class MissionsComponent {
   }
 
   setMission() {
-    if (this.mission && this.mission?.missionData) {
+    if (this.mission) {
       this.missionForm.controls["sortie"].setValue(`${this.mission.sortieID}`);
       this.missionForm.controls["exploitation"].setValue(
-        this.mission.missionData.exploitation);
+        this.mission.exploitation);
       this.missionForm.controls["exploitation"].enable();
       this.setCommunications();
       this.setDCGSs();
       this.missionForm.controls["tailnumber"].setValue(
-        this.mission.missionData.tailNumber);
+        this.mission.tailNumber);
       this.missionForm.controls["tailnumber"].enable();
       this.missionForm.controls["communications"].setValue(
-        this.mission.missionData.communications);
+        this.mission.communications);
       this.missionForm.controls["communications"].enable();
       this.missionForm.controls["dcgs"].setValue(
-        this.mission.missionData.primaryDCGS);
+        this.mission.primaryDCGS);
       this.missionForm.controls["dcgs"].enable();
       this.missionForm.controls["overlap"].setValue(
-        this.convertOverlapToString(this.mission.missionData.missionOverlap));
+        this.convertOverlapToString(this.mission.missionOverlap));
         this.missionForm.controls["overlap"].enable();
       this.missionForm.controls["comments"].setValue(
-        this.mission.missionData.comments);
+        this.mission.comments);
       this.missionForm.controls["comments"].enable();
       this.missionForm.controls['isExecuted'].setValue('none');
-      if (this.mission.missionData.executed) {
+      if (this.mission.executed) {
         this.missionForm.controls['isExecuted'].setValue('executed');
-      } else if (this.mission.missionData.cancelled) {
+      } else if (this.mission.cancelled) {
         this.missionForm.controls['isExecuted'].setValue('cancelled');
-      } else if (this.mission.missionData.aborted) {
+      } else if (this.mission.aborted) {
         this.missionForm.controls['isExecuted'].setValue('aborted');
-      } else if (this.mission.missionData.indefDelay) {
+      } else if (this.mission.indefDelay) {
         this.missionForm.controls['isExecuted'].setValue('indefdelay');
       }
       this.missionForm.controls["isExecuted"].enable();
@@ -195,8 +195,8 @@ export class MissionsComponent {
   showMissionSensor(): string {
     let answer = '';
     let exploit = this.missionForm.value.exploitation.toLowerCase();
-    if (this.mission && this.mission.missionData) {
-      this.mission.missionData.sensors.forEach(sen => {
+    if (this.mission && this.mission) {
+      this.mission.sensors.forEach(sen => {
         if (this.authService.systemInfo) {
           this.authService.systemInfo.platforms.forEach(plat => {
             plat.sensors.forEach(pSen => {

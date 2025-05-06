@@ -57,9 +57,9 @@ export class MissionsSensorsXintComponent extends Sensor{
 
   missionSensor() {
     this.geoint = new MissionSensor();
-    if (this.mission && this.mission.missionData 
-      && this.mission.missionData.sensors) {
-      this.mission.missionData.sensors.forEach(sen => {
+    if (this.mission && this.mission 
+      && this.mission.sensors) {
+      this.mission.sensors.forEach(sen => {
         if (sen.sensorType && sen.sensorType === GeneralSensorType.XINT) {
           this.geoint = new MissionSensor(sen);
         }

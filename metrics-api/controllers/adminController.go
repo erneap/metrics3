@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/erneap/go-models/config"
 	"github.com/erneap/metrics3/metrics-api/models/web"
+	"github.com/erneap/models/v2/config"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -20,7 +20,7 @@ func PurgeMissions(c *gin.Context) {
 		return
 	}
 	filter := bson.M{"missionDate": bson.M{"$lt": msndate}}
-	_, err = config.GetCollection(config.DB, "metrics", "missions").DeleteMany(
+	_, err = config.GetCollection(config.DB, "metrics2", "missions").DeleteMany(
 		context.TODO(), filter)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, web.Message{Message: "Problem Purging Records: " +
@@ -38,7 +38,7 @@ func PurgeOutages(c *gin.Context) {
 		return
 	}
 	filter := bson.M{"missionDate": bson.M{"$lt": msndate}}
-	_, err = config.GetCollection(config.DB, "metrics", "groundoutages").DeleteMany(
+	_, err = config.GetCollection(config.DB, "metrics2", "outages").DeleteMany(
 		context.TODO(), filter)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, web.Message{Message: "Problem Purging Records: " +

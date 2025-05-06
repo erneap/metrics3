@@ -14,8 +14,8 @@ export class ReviewsDayMissionComponent {
   public set mission(m: IMission) {
     this._mission = new Mission(m);
     this.sensors = [];
-    if (this._mission && this._mission.missionData) {
-      this._mission.missionData.sensors.forEach(sen => {
+    if (this._mission) {
+      this._mission.sensors.forEach(sen => {
         this.sensors.push(sen);
       });
     }
@@ -41,18 +41,18 @@ export class ReviewsDayMissionComponent {
 
   getComments(): string {
     let answer = '';
-    if (this.mission.missionData?.aborted) {
+    if (this.mission?.aborted) {
       answer += 'Msn Aborted';
-    } else if (this.mission.missionData?.cancelled) {
+    } else if (this.mission?.cancelled) {
       answer += 'Msn Cancelled';
-    } else if (this.mission.missionData?.indefDelay) {
+    } else if (this.mission?.indefDelay) {
       answer += 'Msn Indef Delay';
     }
-    if (this.mission.missionData?.comments !== '') {
+    if (this.mission?.comments !== '') {
       if (answer !== '') {
         answer += ', ';
       }
-      answer += this.mission.missionData?.comments;
+      answer += this.mission?.comments;
     }
     return answer;
   }

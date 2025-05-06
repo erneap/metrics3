@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/erneap/metrics3/metrics-api/models/interfaces"
+	"github.com/erneap/models/v2/users"
 )
 
 type AuthenticationRequest struct {
@@ -13,9 +13,9 @@ type AuthenticationRequest struct {
 }
 
 type AuthenticationResponse struct {
-	User      *interfaces.User `json:"user,omitempty"`
-	Token     string           `json:"token"`
-	Exception string           `json:"exception"`
+	User      *users.User `json:"user,omitempty"`
+	Token     string      `json:"token"`
+	Exception string      `json:"exception"`
 }
 
 type UpdateRequest struct {

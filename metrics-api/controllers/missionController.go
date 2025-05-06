@@ -9,11 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/erneap/go-models/config"
-	"github.com/erneap/metrics3/metrics-api/middleware"
-	"github.com/erneap/metrics3/metrics-api/models/interfaces"
-	systemdata "github.com/erneap/metrics3/metrics-api/models/systemData"
 	"github.com/erneap/metrics3/metrics-api/models/web"
+	"github.com/erneap/models/v2/config"
+	"github.com/erneap/models/v2/metrics"
+	"github.com/erneap/models/v2/systemdata"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -22,7 +21,7 @@ import (
 func GetMissionsByDate(c *gin.Context) {
 	msnDate := c.Param("msndate")
 
-	var tmissions []interfaces.Mission
+	var tmissions []metrics.Mission
 
 	startDate, err := time.ParseInLocation("2006-01-02", msnDate, time.UTC)
 	if err != nil {
@@ -33,7 +32,7 @@ func GetMissionsByDate(c *gin.Context) {
 	endDate := startDate.Add(24 * time.Hour)
 
 	filter := bson.M{"missionDate": bson.M{"$gte": startDate, "$lt": endDate}}
-	cursor, err := config.GetCollection(config.DB, "metrics", "missions").Find(context.TODO(),
+	cursor, err := config.GetCollection(config.DB, "metrics2", "missions").Find(context.TODO(),
 		filter)
 	if err != nil {
 		c.JSON(http.StatusNotFound, web.MissionsResponse{Missions: tmissions,
@@ -47,10 +46,9 @@ func GetMissionsByDate(c *gin.Context) {
 		return
 	}
 
-	var missions []interfaces.Mission
+	var missions []metrics.Mission
 
 	for _, msn := range tmissions {
-		msn.Decrypt()
 		missions = append(missions, msn)
 	}
 	c.JSON(http.StatusOK, web.MissionsResponse{Missions: missions, Exception: ""})
@@ -60,7 +58,7 @@ func GetMissionsByDates(c *gin.Context) {
 	sDate := c.Param("startdate")
 	eDate := c.Param("enddate")
 
-	var tmissions []interfaces.Mission
+	var tmissions []metrics.Mission
 
 	startDate, err := time.ParseInLocation("2006-01-02", sDate, time.UTC)
 	if err != nil {
@@ -77,7 +75,7 @@ func GetMissionsByDates(c *gin.Context) {
 	endDate = endDate.AddDate(0, 0, 1)
 
 	filter := bson.M{"missionDate": bson.M{"$gte": startDate, "$lt": endDate}}
-	cursor, err := config.GetCollection(config.DB, "metrics", "missions").Find(context.TODO(),
+	cursor, err := config.GetCollection(config.DB, "metrics2", "missions").Find(context.TODO(),
 		filter)
 	if err != nil {
 		c.JSON(http.StatusNotFound, web.MissionsResponse{Missions: tmissions,
@@ -91,10 +89,9 @@ func GetMissionsByDates(c *gin.Context) {
 		return
 	}
 
-	var missions []interfaces.Mission
+	var missions []metrics.Mission
 
 	for _, msn := range tmissions {
-		msn.Decrypt()
 		missions = append(missions, msn)
 	}
 
@@ -105,7 +102,7 @@ func GetMissionsByDateAndPlatform(c *gin.Context) {
 	msnDate := c.Param("msndate")
 	platform := c.Param("platform")
 
-	var tmissions []interfaces.Mission
+	var tmissions []metrics.Mission
 
 	startDate, err := time.ParseInLocation("2006-01-02", msnDate, time.UTC)
 	if err != nil {
@@ -117,7 +114,7 @@ func GetMissionsByDateAndPlatform(c *gin.Context) {
 
 	filter := bson.M{"missionDate": bson.M{"$gte": startDate, "$lt": endDate},
 		"platformID": platform}
-	cursor, err := config.GetCollection(config.DB, "metrics", "missions").Find(context.TODO(),
+	cursor, err := config.GetCollection(config.DB, "metrics2", "missions").Find(context.TODO(),
 		filter)
 	if err != nil {
 		c.JSON(http.StatusNotFound, web.MissionsResponse{Missions: tmissions,
@@ -131,10 +128,9 @@ func GetMissionsByDateAndPlatform(c *gin.Context) {
 		return
 	}
 
-	var missions []interfaces.Mission
+	var missions []metrics.Mission
 
 	for _, msn := range tmissions {
-		msn.Decrypt()
 		missions = append(missions, msn)
 	}
 	c.JSON(http.StatusOK, web.MissionsResponse{Missions: missions, Exception: ""})
@@ -146,7 +142,7 @@ func GetMissionByDatePlatformAndSortie(c *gin.Context) {
 	tsortie, _ := strconv.ParseUint(c.Param("sortie"), 10, 32)
 	sortie := uint(tsortie)
 
-	var mission interfaces.Mission
+	var mission metrics.Mission
 
 	startDate, err := time.ParseInLocation("2006-01-02", msnDate, time.UTC)
 	if err != nil {
@@ -162,7 +158,7 @@ func GetMissionByDatePlatformAndSortie(c *gin.Context) {
 
 	filter := bson.M{"missionDate": bson.M{"$gte": startDate, "$lt": endDate},
 		"platformID": platform, "sortieID": sortie}
-	err = config.GetCollection(config.DB, "metrics", "missions").FindOne(context.TODO(),
+	err = config.GetCollection(config.DB, "metrics2", "missions").FindOne(context.TODO(),
 		filter).Decode(&mission)
 	if err != nil {
 		c.JSON(http.StatusNotFound, &web.MissionResponse{
@@ -170,7 +166,6 @@ func GetMissionByDatePlatformAndSortie(c *gin.Context) {
 		})
 		return
 	}
-	mission.Decrypt()
 	c.JSON(http.StatusOK, web.MissionResponse{Mission: mission})
 }
 
@@ -183,17 +178,16 @@ func GetMissionByID(c *gin.Context) {
 		return
 	}
 
-	var mission interfaces.Mission
+	var mission metrics.Mission
 
 	filter := bson.M{"_id": oID}
-	err = config.GetCollection(config.DB, "metrics", "missions").FindOne(context.TODO(),
+	err = config.GetCollection(config.DB, "metrics2", "missions").FindOne(context.TODO(),
 		filter).Decode(&mission)
 	if err != nil {
 		c.JSON(http.StatusNotFound, &web.MissionResponse{
 			Exception: err.Error()})
 		return
 	}
-	mission.Decrypt()
 	c.JSON(http.StatusOK, web.MissionResponse{Mission: mission})
 }
 
@@ -210,42 +204,39 @@ func CreateMission(c *gin.Context) {
 
 	// first check to ensure no other missions with same key value are
 	// present.
-	var msn interfaces.Mission
+	var msn metrics.Mission
 	endDate := data.MissionDate.Add(24 * time.Hour)
 
 	filter := bson.M{"missionDate": bson.M{"$gte": data.MissionDate, "$lt": endDate},
 		"platformID": data.PlatformID, "sortieID": data.SortieID}
-	err := config.GetCollection(config.DB, "metrics", "missions").FindOne(context.TODO(),
+	err := config.GetCollection(config.DB, "metrics2", "missions").FindOne(context.TODO(),
 		filter).Decode(&msn)
 	if err == nil {
-		msn.Decrypt()
 		c.JSON(http.StatusOK, web.MissionResponse{Mission: msn})
 		return
 	}
 
-	msn = interfaces.Mission{
-		ID:          primitive.NewObjectID(),
-		MissionDate: data.MissionDate,
-		PlatformID:  data.PlatformID,
-		SortieID:    data.SortieID,
-		MissionData: &interfaces.MissionData{
-			Exploitation:   data.Exploitation,
-			PrimaryDCGS:    data.PrimaryDCGS,
-			Communications: data.Communications,
-			TailNumber:     data.TailNumber,
-			MissionOverlap: data.Overlap,
-			Executed:       data.Executed,
-			Aborted:        data.Aborted,
-			Cancelled:      data.Cancelled,
-			IndefDelay:     data.IndefDelay,
-		},
+	msn = metrics.Mission{
+		ID:             primitive.NewObjectID(),
+		MissionDate:    data.MissionDate,
+		PlatformID:     data.PlatformID,
+		SortieID:       data.SortieID,
+		Exploitation:   data.Exploitation,
+		PrimaryDCGS:    data.PrimaryDCGS,
+		Communications: data.Communications,
+		TailNumber:     data.TailNumber,
+		MissionOverlap: data.Overlap,
+		Executed:       data.Executed,
+		Aborted:        data.Aborted,
+		Cancelled:      data.Cancelled,
+		IndefDelay:     data.IndefDelay,
 	}
 
-	initial := middleware.InitialData()
+	initial := metrics.InitialData()
 	for _, plat := range initial.Platforms {
 		if strings.EqualFold(plat.ID, data.PlatformID) {
 			for _, sen := range data.Sensors {
-				sensor := interfaces.MissionSensor{
+				sensor := metrics.MissionSensor{
 					SensorID: sen,
 				}
 				for _, pSen := range plat.Sensors {
@@ -256,7 +247,7 @@ func CreateMission(c *gin.Context) {
 								log.Println(pSen.GeneralType)
 								sensor.SensorType = pSen.GeneralType
 								sensor.SortID = pSen.SortID
-								sensor.SensorOutage = interfaces.MissionSensorOutage{}
+								sensor.SensorOutage = metrics.MissionSensorOutage{}
 								sensor.GroundOutage = 0
 								sensor.PreflightMinutes = exp.StandardTimes.PreflightMinutes
 								sensor.ScheduledMinutes = exp.StandardTimes.ScheduledMinutes
@@ -281,12 +272,12 @@ func CreateMission(c *gin.Context) {
 						}
 					}
 				}
-				msn.MissionData.Sensors = append(msn.MissionData.Sensors, sensor)
+				msn.Sensors = append(msn.Sensors, sensor)
 			}
 		}
 	}
-	msn.Encrypt()
-	_, err = config.GetCollection(config.DB, "metrics", "missions").InsertOne(ctx, msn)
+	//msn.Encrypt()
+	_, err = config.GetCollection(config.DB, "metrics2", "missions").InsertOne(ctx, msn)
 	if err != nil {
 		c.JSON(http.StatusNotModified, &web.MissionResponse{
 			Exception: err.Error(),
@@ -314,15 +305,15 @@ func UpdateMission(c *gin.Context) {
 	}
 
 	filter := bson.M{"_id": id}
-	var mission interfaces.Mission
-	err = config.GetCollection(config.DB, "metrics", "missions").FindOne(ctx, filter).
+	var mission metrics.Mission
+	err = config.GetCollection(config.DB, "metrics2", "missions").FindOne(ctx, filter).
 		Decode(&mission)
 	if err != nil {
 		c.JSON(http.StatusNotFound, web.MissionResponse{
 			Exception: err.Error()})
 		return
 	}
-	mission.Decrypt()
+	//mission.Decrypt()
 
 	switch strings.ToLower(data.Field) {
 	case "msndate", "missiondate":
@@ -332,69 +323,69 @@ func UpdateMission(c *gin.Context) {
 	case "sortie", "sortieid":
 		mission.SortieID = data.NumberValue()
 	case "exploitation":
-		mission.MissionData.Exploitation = data.StringValue()
+		mission.Exploitation = data.StringValue()
 		resetSensorList(&mission)
 	case "dcgs", "primary", "primarydcgs":
-		mission.MissionData.PrimaryDCGS = data.StringValue()
+		mission.PrimaryDCGS = data.StringValue()
 	case "communications":
-		mission.MissionData.Communications = data.StringValue()
+		mission.Communications = data.StringValue()
 	case "tail", "tailno", "tailnumber":
-		mission.MissionData.TailNumber = data.StringValue()
+		mission.TailNumber = data.StringValue()
 	case "overlap", "msnoverlap", "missionoverlap":
-		mission.MissionData.MissionOverlap = data.NumberValue()
+		mission.MissionOverlap = data.NumberValue()
 	case "comments":
-		mission.MissionData.Comments = data.StringValue()
+		mission.Comments = data.StringValue()
 	case "isexecuted":
 		switch strings.ToLower(data.StringValue()) {
 		case "executed":
-			mission.MissionData.Executed = true
-			mission.MissionData.Cancelled = false
-			mission.MissionData.Aborted = false
-			mission.MissionData.IndefDelay = false
+			mission.Executed = true
+			mission.Cancelled = false
+			mission.Aborted = false
+			mission.IndefDelay = false
 		case "cancelled":
-			mission.MissionData.Executed = false
-			mission.MissionData.Cancelled = true
-			mission.MissionData.Aborted = false
-			mission.MissionData.IndefDelay = false
+			mission.Executed = false
+			mission.Cancelled = true
+			mission.Aborted = false
+			mission.IndefDelay = false
 		case "aborted":
-			mission.MissionData.Executed = false
-			mission.MissionData.Cancelled = false
-			mission.MissionData.Aborted = true
-			mission.MissionData.IndefDelay = false
+			mission.Executed = false
+			mission.Cancelled = false
+			mission.Aborted = true
+			mission.IndefDelay = false
 		case "indefdelay":
-			mission.MissionData.Executed = false
-			mission.MissionData.Cancelled = false
-			mission.MissionData.Aborted = false
-			mission.MissionData.IndefDelay = true
+			mission.Executed = false
+			mission.Cancelled = false
+			mission.Aborted = false
+			mission.IndefDelay = true
 		default:
-			mission.MissionData.Executed = true
-			mission.MissionData.Cancelled = false
-			mission.MissionData.Aborted = false
-			mission.MissionData.IndefDelay = false
+			mission.Executed = true
+			mission.Cancelled = false
+			mission.Aborted = false
+			mission.IndefDelay = false
 		}
 	case "aborted":
-		mission.MissionData.Aborted = data.BooleanValue()
+		mission.Aborted = data.BooleanValue()
 	case "indef", "indefdelay":
-		mission.MissionData.IndefDelay = data.BooleanValue()
+		mission.IndefDelay = data.BooleanValue()
 	case "change", "changesensor", "changeimint", "changeimintsensor", "imintsensor":
 		found := false
-		for pos := 0; pos < len(mission.MissionData.Sensors) && !found; pos++ {
-			sen := mission.MissionData.Sensors[pos]
+		for pos := 0; pos < len(mission.Sensors) && !found; pos++ {
+			sen := mission.Sensors[pos]
 			if sen.SensorType == systemdata.GEOINT {
 				found = true
-				mission.MissionData.Sensors = append(mission.MissionData.Sensors[:pos],
-					mission.MissionData.Sensors[pos+1:]...)
+				mission.Sensors = append(mission.Sensors[:pos],
+					mission.Sensors[pos+1:]...)
 			}
 		}
-		for _, plat := range middleware.InitialData().Platforms {
+		for _, plat := range metrics.InitialData().Platforms {
 			if strings.EqualFold(plat.ID, mission.PlatformID) {
 				for _, pSen := range plat.Sensors {
-					if pSen.GeneralType == systemdata.GEOINT &&
+					if pSen.GeneralType == systemdata.GeneralTypes(systemdata.GEOINT) &&
 						strings.EqualFold(pSen.ID, data.StringValue()) {
 						for _, exp := range pSen.Exploitations {
 							if strings.Contains(strings.ToLower(exp.Exploitation),
-								strings.ToLower(mission.MissionData.Exploitation)) {
-								sensor := interfaces.MissionSensor{
+								strings.ToLower(mission.Exploitation)) {
+								sensor := metrics.MissionSensor{
 									SensorID:          pSen.ID,
 									SensorType:        pSen.GeneralType,
 									PreflightMinutes:  exp.StandardTimes.PreflightMinutes,
@@ -404,7 +395,7 @@ func UpdateMission(c *gin.Context) {
 									AdditionalMinutes: 0,
 									FinalCode:         0,
 									KitNumber:         "",
-									SensorOutage: interfaces.MissionSensorOutage{
+									SensorOutage: metrics.MissionSensorOutage{
 										TotalOutageMinutes:     0,
 										PartialLBOutageMinutes: 0,
 										PartialHBOutageMinutes: 0,
@@ -433,9 +424,9 @@ func UpdateMission(c *gin.Context) {
 										sensor.Images = append(sensor.Images, imgType)
 									}
 								}
-								mission.MissionData.Sensors = append(mission.MissionData.Sensors,
+								mission.Sensors = append(mission.Sensors,
 									sensor)
-								sort.Sort(interfaces.ByMissionSensor(mission.MissionData.Sensors))
+								sort.Sort(metrics.ByMissionSensor(mission.Sensors))
 							}
 						}
 					}
@@ -447,8 +438,8 @@ func UpdateMission(c *gin.Context) {
 			Exception: "Unknown Field"})
 		return
 	}
-	mission.Encrypt()
-	_, err = config.GetCollection(config.DB, "metrics", "missions").ReplaceOne(ctx,
+	//msn.Encrypt()
+	_, err = config.GetCollection(config.DB, "metrics2", "missions").ReplaceOne(ctx,
 		filter, mission)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, web.MissionResponse{
@@ -458,27 +449,27 @@ func UpdateMission(c *gin.Context) {
 	c.JSON(http.StatusOK, web.MissionResponse{Mission: mission})
 }
 
-func resetSensorList(mission *interfaces.Mission) {
-	var newSensorList []interfaces.MissionSensor
-	if len(mission.MissionData.Sensors) > 0 {
+func resetSensorList(mission *metrics.Mission) {
+	var newSensorList []metrics.MissionSensor
+	if len(mission.Sensors) > 0 {
 		// look for GEOINT sensor and copy over to new slice
 		imintSensor := false
-		for _, sen := range mission.MissionData.Sensors {
+		for _, sen := range mission.Sensors {
 			if sen.SensorType == systemdata.GEOINT && !imintSensor {
 				newSensorList = append(newSensorList, sen)
 				imintSensor = true
 			}
 		}
 
-		for _, plat := range middleware.InitialData().Platforms {
+		for _, plat := range metrics.InitialData().Platforms {
 			if strings.EqualFold(mission.PlatformID, plat.ID) {
 				for _, pSen := range plat.Sensors {
 					for _, exp := range pSen.Exploitations {
 						if strings.Contains(strings.ToLower(exp.Exploitation),
-							strings.ToLower(mission.MissionData.Exploitation)) {
+							strings.ToLower(mission.Exploitation)) {
 							if pSen.GeneralType == systemdata.GEOINT {
 								if !imintSensor {
-									sensor := interfaces.MissionSensor{
+									sensor := metrics.MissionSensor{
 										SensorID:          pSen.ID,
 										SensorType:        pSen.GeneralType,
 										PreflightMinutes:  exp.StandardTimes.PreflightMinutes,
@@ -488,7 +479,7 @@ func resetSensorList(mission *interfaces.Mission) {
 										AdditionalMinutes: 0,
 										FinalCode:         0,
 										KitNumber:         "",
-										SensorOutage: interfaces.MissionSensorOutage{
+										SensorOutage: metrics.MissionSensorOutage{
 											TotalOutageMinutes:     0,
 											PartialLBOutageMinutes: 0,
 											PartialHBOutageMinutes: 0,
@@ -520,7 +511,7 @@ func resetSensorList(mission *interfaces.Mission) {
 									newSensorList = append(newSensorList, sensor)
 								}
 							} else {
-								sensor := interfaces.MissionSensor{
+								sensor := metrics.MissionSensor{
 									SensorID:          pSen.ID,
 									SensorType:        pSen.GeneralType,
 									PreflightMinutes:  exp.StandardTimes.PreflightMinutes,
@@ -530,7 +521,7 @@ func resetSensorList(mission *interfaces.Mission) {
 									AdditionalMinutes: 0,
 									FinalCode:         0,
 									KitNumber:         "",
-									SensorOutage: interfaces.MissionSensorOutage{
+									SensorOutage: metrics.MissionSensorOutage{
 										TotalOutageMinutes:     0,
 										PartialLBOutageMinutes: 0,
 										PartialHBOutageMinutes: 0,
@@ -549,9 +540,9 @@ func resetSensorList(mission *interfaces.Mission) {
 			}
 		}
 	}
-	sort.Sort(interfaces.ByMissionSensor(newSensorList))
-	mission.MissionData.Sensors = nil
-	mission.MissionData.Sensors = newSensorList
+	sort.Sort(metrics.ByMissionSensor(newSensorList))
+	mission.Sensors = nil
+	mission.Sensors = newSensorList
 
 }
 
@@ -574,17 +565,17 @@ func UpdateMissionSensor(c *gin.Context) {
 	}
 
 	filter := bson.M{"_id": id}
-	var mission interfaces.Mission
-	err = config.GetCollection(config.DB, "metrics", "missions").FindOne(ctx, filter).
+	var mission metrics.Mission
+	err = config.GetCollection(config.DB, "metrics2", "missions").FindOne(ctx, filter).
 		Decode(&mission)
 	if err != nil {
 		c.JSON(http.StatusNotFound, web.MissionResponse{
 			Exception: err.Error()})
 		return
 	}
-	mission.Decrypt()
+	//mission.Decrypt()
 
-	for pos, sen := range mission.MissionData.Sensors {
+	for pos, sen := range mission.Sensors {
 		if strings.EqualFold(sen.SensorID, data.SensorID) {
 			switch strings.ToLower(data.Field) {
 			case "preflight", "preflightminutes", "premission":
@@ -616,6 +607,8 @@ func UpdateMissionSensor(c *gin.Context) {
 				sen.Comments = data.StringValue()
 			case "hap", "hashap":
 				sen.HasHap = data.BooleanValue()
+			case "aps", "apsplus":
+				sen.ModifyEquipment(data.Field, data.StringValue())
 			case "reset":
 				sen.PreflightMinutes = 0
 				sen.ScheduledMinutes = 0
@@ -623,7 +616,7 @@ func UpdateMissionSensor(c *gin.Context) {
 				sen.PostflightMinutes = 0
 				sen.AdditionalMinutes = 0
 				sen.KitNumber = ""
-				sen.SensorOutage = interfaces.MissionSensorOutage{
+				sen.SensorOutage = metrics.MissionSensorOutage{
 					TotalOutageMinutes:     uint(0),
 					PartialLBOutageMinutes: uint(0),
 					PartialHBOutageMinutes: uint(0)}
@@ -635,11 +628,11 @@ func UpdateMissionSensor(c *gin.Context) {
 				c.JSON(http.StatusBadRequest, web.MissionResponse{Exception: "Unknown Field"})
 				return
 			}
-			mission.MissionData.Sensors[pos] = sen
+			mission.Sensors[pos] = sen
 		}
 	}
-	mission.Encrypt()
-	_, err = config.GetCollection(config.DB, "metrics", "missions").ReplaceOne(ctx,
+	//msn.Encrypt()
+	_, err = config.GetCollection(config.DB, "metrics2", "missions").ReplaceOne(ctx,
 		filter, mission)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, web.MissionResponse{
@@ -668,17 +661,17 @@ func UpdateMissionSensorImages(c *gin.Context) {
 	}
 
 	filter := bson.M{"_id": id}
-	var mission interfaces.Mission
-	err = config.GetCollection(config.DB, "metrics", "missions").FindOne(ctx, filter).
+	var mission metrics.Mission
+	err = config.GetCollection(config.DB, "metrics2", "missions").FindOne(ctx, filter).
 		Decode(&mission)
 	if err != nil {
 		c.JSON(http.StatusNotFound, web.MissionResponse{
 			Exception: err.Error()})
 		return
 	}
-	mission.Decrypt()
+	//mission.Decrypt()
 
-	for _, sen := range mission.MissionData.Sensors {
+	for _, sen := range mission.Sensors {
 		if sen.SensorID == data.SensorID {
 			for _, img := range sen.Images {
 				if img.ID == data.ImageTypeID {
@@ -711,8 +704,8 @@ func UpdateMissionSensorImages(c *gin.Context) {
 			}
 		}
 	}
-	mission.Encrypt()
-	_, err = config.GetCollection(config.DB, "metrics", "missions").ReplaceOne(ctx,
+	//msn.Encrypt()
+	_, err = config.GetCollection(config.DB, "metrics2", "missions").ReplaceOne(ctx,
 		filter, mission)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, web.MissionResponse{
@@ -733,7 +726,7 @@ func DeleteMission(c *gin.Context) {
 
 	filter := bson.M{"_id": oId}
 
-	result, err := config.GetCollection(config.DB, "metrics", "missions").DeleteOne(
+	result, err := config.GetCollection(config.DB, "metrics2", "missions").DeleteOne(
 		context.TODO(), filter)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, web.MissionResponse{

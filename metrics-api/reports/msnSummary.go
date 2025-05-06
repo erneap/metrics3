@@ -9,10 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/erneap/go-models/config"
-	"github.com/erneap/metrics3/metrics-api/middleware"
-	"github.com/erneap/metrics3/metrics-api/models/interfaces"
-	systemdata "github.com/erneap/metrics3/metrics-api/models/systemData"
+	"github.com/erneap/models/v2/config"
+	"github.com/erneap/models/v2/metrics"
+	"github.com/erneap/models/v2/systemdata"
 	"github.com/xuri/excelize/v2"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -23,8 +22,8 @@ type MissionSummary struct {
 	StartDate    time.Time
 	EndDate      time.Time
 	Daily        bool
-	Missions     []interfaces.Mission
-	Outages      []interfaces.GroundOutage
+	Missions     []metrics.Mission
+	Outages      []metrics.GroundOutage
 	Styles       map[string]int
 	SystemInfo   systemdata.SystemInfo
 }
@@ -32,7 +31,7 @@ type MissionSummary struct {
 func (ms *MissionSummary) Create() (*excelize.File, error) {
 	// create outage excel file
 	workbook := excelize.NewFile()
-	ms.SystemInfo = middleware.InitialData()
+	ms.SystemInfo = metrics.InitialData()
 
 	switch ms.ReportPeriod {
 	case 1:
@@ -53,9 +52,9 @@ func (ms *MissionSummary) Create() (*excelize.File, error) {
 	}
 
 	// collect all the missions for the period
-	var tmissions []interfaces.Mission
+	var tmissions []metrics.Mission
 	filter := bson.M{"missionDate": bson.M{"$gte": ms.StartDate, "$lte": ms.EndDate}}
-	cursor, err := config.GetCollection(config.DB, "metrics", "missions").Find(context.TODO(),
+	cursor, err := config.GetCollection(config.DB, "metrics2", "missions").Find(context.TODO(),
 		filter)
 	if err != nil {
 		return nil, err
@@ -66,16 +65,16 @@ func (ms *MissionSummary) Create() (*excelize.File, error) {
 	}
 
 	for _, msn := range tmissions {
-		msn.Decrypt()
+		//msn.Decrypt()
 		ms.Missions = append(ms.Missions, msn)
 	}
-	sort.Sort(interfaces.ByMission(ms.Missions))
+	sort.Sort(metrics.ByMission(ms.Missions))
 	log.Println(len(ms.Missions))
 
 	// collect all the outages for the period
-	var tOutages []interfaces.GroundOutage
+	var tOutages []metrics.GroundOutage
 	filter = bson.M{"outageDate": bson.M{"$gte": ms.StartDate, "$lte": ms.EndDate}}
-	cursor, err = config.GetCollection(config.DB, "metrics", "groundoutages").Find(context.TODO(),
+	cursor, err = config.GetCollection(config.DB, "metrics2", "outages").Find(context.TODO(),
 		filter)
 	if err != nil {
 		return nil, err
@@ -86,11 +85,11 @@ func (ms *MissionSummary) Create() (*excelize.File, error) {
 	}
 
 	for _, outage := range tOutages {
-		outage.Decrypt()
+		//outage.Decrypt()
 		ms.Outages = append(ms.Outages, outage)
 	}
 
-	sort.Sort(interfaces.ByOutage(ms.Outages))
+	sort.Sort(metrics.ByOutage(ms.Outages))
 
 	// create the report sheets based on ReportType, and the rest of the information
 	// but create the needed styles first
@@ -315,7 +314,7 @@ func (ms *MissionSummary) AddSummarySheet(workbook *excelize.File,
 	for _, msn := range ms.Missions {
 		if (msn.MissionDate.Equal(start) || msn.MissionDate.After(start)) &&
 			(msn.MissionDate.Equal(end) || msn.MissionDate.Before(end)) {
-			exp := msn.MissionData.Exploitation
+			exp := msn.Exploitation
 			if !strings.EqualFold(exp, "primary") {
 				exp = "Shadow/Federated"
 			}
@@ -350,7 +349,7 @@ func (ms *MissionSummary) AddSummarySheet(workbook *excelize.File,
 	}
 
 	// pull ground outages for period
-	var outages []interfaces.GroundOutage
+	var outages []metrics.GroundOutage
 	for _, outage := range ms.Outages {
 		if (outage.OutageDate.Equal(start) || outage.OutageDate.After(start)) &&
 			(outage.OutageDate.Equal(end) || outage.OutageDate.Before(end) &&

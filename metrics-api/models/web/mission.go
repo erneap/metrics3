@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/erneap/metrics3/metrics-api/models/interfaces"
+	"github.com/erneap/models/v2/metrics"
 )
 
 type CreateMission struct {
@@ -59,11 +59,11 @@ func (ur *UpdateMission) DateValue() time.Time {
 }
 
 type MissionResponse struct {
-	Mission   interfaces.Mission `json:"mission"`
-	Exception string             `json:"exception"`
+	Mission   metrics.Mission `json:"mission"`
+	Exception string          `json:"exception"`
 }
 
 type MissionsResponse struct {
-	Missions  []interfaces.Mission `json:"missions"`
-	Exception string               `json:"exception"`
+	Missions  []metrics.Mission `json:"missions"`
+	Exception string            `json:"exception"`
 }

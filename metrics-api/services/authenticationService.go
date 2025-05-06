@@ -4,18 +4,19 @@ import (
 	"context"
 	"log"
 
-	"github.com/erneap/go-models/config"
-	"github.com/erneap/metrics3/metrics-api/models/interfaces"
+	"github.com/erneap/models/v2/config"
+	"github.com/erneap/models/v2/employees"
+	"github.com/erneap/models/v2/users"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // Every service will have functions for completing the CRUD functions
 // the retrieve functions will be for individual user and the whole list of
-// interfaces.
+// metrics.
 
 // CRUD Create function
-func CreateUser(email, first, middle, last, password string) *interfaces.User {
+func CreateUser(email, first, middle, last, password string) *users.User {
 	userCol := config.GetCollection(config.DB, "authenticate", "users")
 	empCol := config.GetCollection(config.DB, "scheduler", "employees")
 
@@ -24,9 +25,9 @@ func CreateUser(email, first, middle, last, password string) *interfaces.User {
 		"lastName":  last,
 	}
 
-	var user interfaces.User
+	var user users.User
 	if err := userCol.FindOne(context.TODO(), filter).Decode(&user); err != nil {
-		user = interfaces.User{
+		user = users.User{
 			EmailAddress: email,
 			FirstName:    first,
 			MiddleName:   middle,
@@ -36,7 +37,7 @@ func CreateUser(email, first, middle, last, password string) *interfaces.User {
 			"name.firstname": first,
 			"name.lastname":  last,
 		}
-		var emp interfaces.Employee
+		var emp employees.Employee
 		empCol.FindOne(context.TODO(), eFilter).Decode(&emp)
 		if emp.ID != primitive.NilObjectID {
 			user.ID = emp.ID
@@ -60,15 +61,15 @@ func CreateUser(email, first, middle, last, password string) *interfaces.User {
 	return &user
 }
 
-func AddUser(user *interfaces.User) *interfaces.User {
+func AddUser(user *users.User) *users.User {
 	userCol := config.GetCollection(config.DB, "authenticate", "users")
 	userCol.InsertOne(context.TODO(), user)
 	return user
 }
 
 // CRUD Retrieve Functions (One and ALL)
-func GetUser(id primitive.ObjectID) *interfaces.User {
-	var user interfaces.User
+func GetUser(id primitive.ObjectID) *users.User {
+	var user users.User
 
 	filter := bson.M{
 		"_id": id,
@@ -84,8 +85,8 @@ func GetUser(id primitive.ObjectID) *interfaces.User {
 	return &user
 }
 
-func GetUserByEmail(emailAddress string) (*interfaces.User, error) {
-	var user interfaces.User
+func GetUserByEmail(emailAddress string) (*users.User, error) {
+	var user users.User
 
 	filter := bson.M{
 		"emailAddress": emailAddress,
@@ -100,8 +101,8 @@ func GetUserByEmail(emailAddress string) (*interfaces.User, error) {
 	return &user, nil
 }
 
-func GetUsers() ([]interfaces.User, error) {
-	var users []interfaces.User
+func GetUsers() ([]users.User, error) {
+	var users []users.User
 
 	userCol := config.GetCollection(config.DB, "authenticate", "users")
 
@@ -117,7 +118,7 @@ func GetUsers() ([]interfaces.User, error) {
 }
 
 // CRUD Update Function
-func UpdateUser(user interfaces.User) error {
+func UpdateUser(user users.User) error {
 	userCol := config.GetCollection(config.DB, "authenticate", "users")
 
 	filter := bson.M{

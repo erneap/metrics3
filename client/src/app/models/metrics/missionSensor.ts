@@ -37,6 +37,7 @@ export interface IMissionSensor {
     towerID?: number;
     sortID: number;
     comments: string;
+    equipment: string[];
     images: ImageType[];
 }
 
@@ -56,6 +57,7 @@ export class MissionSensor implements IMissionSensor {
     public towerID?: number;
     public sortID: number;
     public comments: string;
+    public equipment: string[];
     public images: ImageType[];
 
     constructor(sensor?: IMissionSensor) {
@@ -83,6 +85,12 @@ export class MissionSensor implements IMissionSensor {
         this.towerID = (sensor) ? sensor.towerID : undefined;
         this.comments = (sensor && sensor.comments) ? sensor.comments : '';
         this.sortID = (sensor && sensor.sortID) ? sensor.sortID : 0;
+        this.equipment = [];
+        if (sensor && sensor.equipment.length > 0) {
+            for (let i=0; i < sensor.equipment.length; i++) {
+                this.equipment.push(sensor.equipment[i])
+            }
+        }
 
         this.images = [];
         if (sensor && sensor.images && sensor.images.length > 0) {
@@ -98,6 +106,16 @@ export class MissionSensor implements IMissionSensor {
             return (this.sortID < other.sortID) ? -1 : 1;
         }
         return -1;
+    }
+
+    equipmentInUse(sid: string): boolean {
+        let answer = false;
+        this.equipment.forEach(equip => {
+            if (equip.toLowerCase() === sid.toLowerCase()) {
+                answer = true;
+            }
+        });
+        return answer;
     }
 }
 
