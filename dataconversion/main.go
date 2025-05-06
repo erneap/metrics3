@@ -6,10 +6,10 @@ import (
 	"strings"
 	"time"
 
+	v1metrics "github.com/erneap/go-models/metrics"
+	v1sysdata "github.com/erneap/go-models/systemdata"
 	v2config "github.com/erneap/models/v2/config"
-	v1metrics "github.com/erneap/models/v2/metrics"
 	v2metrics "github.com/erneap/models/v2/metrics"
-	v1sysdata "github.com/erneap/models/v2/systemdata"
 	v2sysdata "github.com/erneap/models/v2/systemdata"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -35,24 +35,24 @@ func main() {
 	apsPlusDate := time.Date(2025, 1, 1, 9, 0, 0, 0, time.UTC)
 	missions2 := make([]v2metrics.Mission, 0)
 	for _, msn := range missions1 {
-		//msn.Decrypt()
+		msn.Decrypt()
 		msn2 := new(v2metrics.Mission)
 		msn2.ID = msn.ID
 		msn2.MissionDate = msn.MissionDate
 		msn2.PlatformID = msn.PlatformID
 		msn2.SortieID = msn.SortieID
-		msn2.Exploitation = msn.Exploitation
-		msn2.TailNumber = msn.TailNumber
-		msn2.Communications = msn.Communications
-		msn2.PrimaryDCGS = msn.PrimaryDCGS
-		msn2.Cancelled = msn.Cancelled
-		msn2.Executed = msn.Executed
-		msn2.Aborted = msn.Aborted
-		msn2.IndefDelay = msn.IndefDelay
-		msn2.MissionOverlap = msn.MissionOverlap
-		msn2.Comments = msn.Comments
+		msn2.Exploitation = msn.MissionData.Exploitation
+		msn2.TailNumber = msn.MissionData.TailNumber
+		msn2.Communications = msn.MissionData.Communications
+		msn2.PrimaryDCGS = msn.MissionData.PrimaryDCGS
+		msn2.Cancelled = msn.MissionData.Cancelled
+		msn2.Executed = msn.MissionData.Executed
+		msn2.Aborted = msn.MissionData.Aborted
+		msn2.IndefDelay = msn.MissionData.IndefDelay
+		msn2.MissionOverlap = msn.MissionData.MissionOverlap
+		msn2.Comments = msn.MissionData.Comments
 
-		for _, sensor := range msn.Sensors {
+		for _, sensor := range msn.MissionData.Sensors {
 			sen := new(v2metrics.MissionSensor)
 			sen.SensorID = sensor.SensorID
 			sen.SensorType = v2sysdata.GeneralTypes(sensor.SensorType)
@@ -125,7 +125,7 @@ func main() {
 	// convert all the v1 outages to v2 outages
 	outages := make([]v2metrics.GroundOutage, 0)
 	for _, outage := range toutages {
-		//outage.Decrypt()
+		outage.Decrypt()
 		out2 := v2metrics.GroundOutage{
 			ID:             outage.ID,
 			OutageDate:     outage.OutageDate,

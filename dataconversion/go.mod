@@ -2,7 +2,7 @@ module github.com/erneap/metrics3/dataconversion
 
 go 1.23.0
 
-require github.com/erneap/models/v2 v2.0.0-alpha.4
+require github.com/erneap/models/v2 v2.0.7
 
 require (
 	github.com/erneap/go-models v1.16.5 // indirect
