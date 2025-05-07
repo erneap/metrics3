@@ -86,7 +86,7 @@ export class MissionSensor implements IMissionSensor {
         this.comments = (sensor && sensor.comments) ? sensor.comments : '';
         this.sortID = (sensor && sensor.sortID) ? sensor.sortID : 0;
         this.equipment = [];
-        if (sensor && sensor.equipment.length > 0) {
+        if (sensor && sensor.equipment && sensor.equipment.length > 0) {
             for (let i=0; i < sensor.equipment.length; i++) {
                 this.equipment.push(sensor.equipment[i])
             }
