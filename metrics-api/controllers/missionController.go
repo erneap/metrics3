@@ -254,14 +254,15 @@ func CreateMission(c *gin.Context) {
 									found := false
 									if gs.CheckForUse && len(gs.Exploitations) > 0 {
 										for _, gexp := range gs.Exploitations {
-											if strings.EqualFold(gexp.PlatformID, data.PlatformID) {
+											if strings.EqualFold(gexp.PlatformID, data.PlatformID) &&
+												strings.EqualFold(gexp.SensorType, sensor.SensorID) {
 												found = true
 											}
 										}
 									}
 									if found {
 										sensor.CheckedEquipment = append(sensor.CheckedEquipment,
-											strings.ToLower(sensor.SensorID))
+											strings.ToLower(gs.ID))
 									}
 								}
 							}
