@@ -242,9 +242,7 @@ func CreateMission(c *gin.Context) {
 				for _, pSen := range plat.Sensors {
 					if strings.EqualFold(sen, pSen.ID) {
 						for _, exp := range pSen.Exploitations {
-							log.Printf("PSen: %s - Data: %s\n", exp.Exploitation, data.Exploitation)
 							if strings.Contains(strings.ToLower(exp.Exploitation), strings.ToLower(data.Exploitation)) {
-								log.Println(pSen.GeneralType)
 								sensor.SensorType = pSen.GeneralType
 								sensor.SortID = pSen.SortID
 								sensor.SensorOutage = metrics.MissionSensorOutage{}
@@ -252,6 +250,20 @@ func CreateMission(c *gin.Context) {
 								sensor.PreflightMinutes = exp.StandardTimes.PreflightMinutes
 								sensor.ScheduledMinutes = exp.StandardTimes.ScheduledMinutes
 								sensor.PostflightMinutes = exp.StandardTimes.PostflightMinutes
+								for _, gs := range initial.GroundSystems {
+									found := false
+									if gs.CheckForUse && len(gs.Exploitations) > 0 {
+										for _, gexp := range gs.Exploitations {
+											if strings.EqualFold(gexp.PlatformID, data.PlatformID) {
+												found = true
+											}
+										}
+									}
+									if found {
+										sensor.CheckedEquipment = append(sensor.CheckedEquipment,
+											strings.ToLower(sensor.SensorID))
+									}
+								}
 							}
 						}
 						for _, img := range pSen.ImageTypes {
