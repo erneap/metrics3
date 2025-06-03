@@ -161,6 +161,18 @@
           "exploitation": "Shadow/Federated",
           "communicationID": "Non-LOS",
           "enclaves": [ "LOW", "HIGH"]
+        },
+        {
+          "platformID": "U2",
+          "sensorType": "PME4",
+          "exploitation": "Primary",
+          "communicationID": "Non-LOS"
+        },
+        {
+          "platformID": "U2",
+          "sensorType": "PME4",
+          "exploitation": "Shadow/Federated",
+          "communicationID": "Non-LOS"
         }
       ]
     },
