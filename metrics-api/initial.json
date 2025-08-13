@@ -324,7 +324,7 @@
       "showOnGSEG": false,
       "showOnMIST": false,
       "showOnXINT": false,
-      "checkForUse": false,
+      "checkForUse": true,
       "exploitations": [
         {
           "platformID": "FMV",
