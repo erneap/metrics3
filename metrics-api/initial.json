@@ -295,6 +295,29 @@
       "exploitations": []
     },
     {
+      "id": "MAAS",
+      "enclaves": [ "LOW" ],
+      "showOnGEOINT": true,
+      "showOnGSEG": false,
+      "showOnMIST": false,
+      "showOnXINT": false,
+      "checkForUse": false,
+      "exploitations": [
+        {
+          "platformID": "FMV",
+          "sensorType": "IMINT",
+          "exploitation": "Primary",
+          "communicationID": "LOS"
+        },
+        {
+          "platformID": "FMV",
+          "sensorType": "IMINT",
+          "exploitation": "Shadow/Federated",
+          "communicationID": "Ext-LOS"
+        }
+      ]
+    },
+    {
       "id": "MEAC",
       "enclaves": [ "S-REL", "LOW", "HIGH" ],
       "showOnGEOINT": true,
@@ -327,13 +350,13 @@
           "platformID": "U2",
           "sensorType": "PME9",
           "exploitation": "Primary",
-          "communicationID": "LOS"
+          "communicationID": "Non-LOS"
         },
         {
           "platformID": "U2",
           "sensorType": "PME9",
           "exploitation": "Shadow/Federated",
-          "communicationID": "Ext-LOS"
+          "communicationID": "Non-LOS"
         }
       ]
     },
