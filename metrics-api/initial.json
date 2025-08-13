@@ -232,6 +232,29 @@
       "exploitations": []
     },
     {
+      "id": "DDSA",
+      "enclaves": [ "LOW" ],
+      "showOnGEOINT": false,
+      "showOnGSEG": false,
+      "showOnMIST": true,
+      "showOnXINT": false,
+      "checkForUse": false,
+      "exploitations": [
+        {
+          "platformID": "U2",
+          "sensorType": "PME9",
+          "exploitation": "Primary",
+          "communicationID": "Non-LOS"
+        },
+        {
+          "platformID": "U2",
+          "sensorType": "PME9",
+          "exploitation": "Shadow/Federated",
+          "communicationID": "Non-LOS"
+        }
+      ]
+    },
+    {
       "id": "FPED",
       "enclaves": [ "LOW" ],
       "showOnGEOINT": true,
@@ -336,29 +359,6 @@
       "showOnXINT": false,
       "checkForUse": false,
       "exploitations": []
-    },
-    {
-      "id": "DDSA",
-      "enclaves": [ "LOW" ],
-      "showOnGEOINT": false,
-      "showOnGSEG": false,
-      "showOnMIST": true,
-      "showOnXINT": false,
-      "checkForUse": false,
-      "exploitations": [
-        {
-          "platformID": "U2",
-          "sensorType": "PME9",
-          "exploitation": "Primary",
-          "communicationID": "Non-LOS"
-        },
-        {
-          "platformID": "U2",
-          "sensorType": "PME9",
-          "exploitation": "Shadow/Federated",
-          "communicationID": "Non-LOS"
-        }
-      ]
     },
     {
       "id": "PCS-A",
